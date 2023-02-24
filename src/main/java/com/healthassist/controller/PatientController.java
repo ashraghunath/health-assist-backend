@@ -1,8 +1,11 @@
 package com.healthassist.controller;
 
 import com.healthassist.request.AssessmentSubmissionRequest;
+import com.healthassist.request.UserRequest;
 import com.healthassist.response.AssessmentResponse;
+import com.healthassist.response.LoginResponse;
 import com.healthassist.service.AssessmentService;
+import com.healthassist.service.BaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
@@ -14,6 +17,14 @@ public class PatientController {
 
     @Autowired
     private AssessmentService assessmentService;
+
+    @Autowired
+    private BaseService baseService;
+
+    @PostMapping("/signup")
+    public LoginResponse signup(@Valid @RequestBody UserRequest request) {
+        return baseService.signUp(request);
+    }
 
     @GetMapping("/assessment/{assessmentId}")
     public AssessmentResponse getAssessment(@PathVariable String assessmentId) {
