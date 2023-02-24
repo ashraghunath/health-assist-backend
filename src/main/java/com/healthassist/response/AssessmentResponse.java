@@ -1,4 +1,4 @@
-package com.healthassist.entity;
+package com.healthassist.response;
 
 import lombok.Getter;
 

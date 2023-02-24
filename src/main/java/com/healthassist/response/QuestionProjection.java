@@ -1,5 +1,6 @@
-package com.healthassist.entity;
+package com.healthassist.response;
 
+import com.healthassist.entity.Question;
 import lombok.Getter;
 import lombok.Setter;
 
