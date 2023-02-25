@@ -22,7 +22,7 @@ public class PatientController {
     private BaseService baseService;
 
     @PostMapping("/signup")
-    public LoginResponse signup(@Valid @RequestBody UserRequest request) {
+    public LoginResponse signUp(@Valid @RequestBody UserRequest request) {
         return baseService.signUp(request);
     }
 
