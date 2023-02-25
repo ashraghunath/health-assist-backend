@@ -1,5 +1,6 @@
 package com.healthassist.service;
 
+import com.healthassist.common.AuthorityName;
 import com.healthassist.entity.User;
 import com.healthassist.exception.AlreadyExistsException;
 import com.healthassist.mapper.UserMapper;
@@ -23,7 +24,7 @@ public class BaseService {
     @Autowired
     private UserRepository userRepository;
 
-    public LoginResponse signUp(UserRequest userRequest) {
+    public LoginResponse signUp(UserRequest userRequest, AuthorityName authorityName) {
         User user = userMapper.fromPatientRequest(userRequest);
         if (user == null) {
             return this.createErrorLoginResponse("Invalid user request");
@@ -49,7 +50,8 @@ public class BaseService {
         } catch (AlreadyExistsException e) {
             return this.createErrorLoginResponse(e.getMessage());
         }
-        
+
+        user.setAuthority(authorityName);
         user.setDeleted(false);
         user.setLastPasswordResetDate(new Date());
         //Encrypt User Password

@@ -1,5 +1,6 @@
 package com.healthassist.controller;
 
+import com.healthassist.common.AuthorityName;
 import com.healthassist.request.AssessmentSubmissionRequest;
 import com.healthassist.request.UserRequest;
 import com.healthassist.response.AssessmentResponse;
@@ -23,7 +24,7 @@ public class PatientController {
 
     @PostMapping("/signup")
     public LoginResponse signUp(@Valid @RequestBody UserRequest request) {
-        return baseService.signUp(request);
+        return baseService.signUp(request, AuthorityName.ROLE_PATIENT);
     }
 
     @GetMapping("/assessment/{assessmentId}")
