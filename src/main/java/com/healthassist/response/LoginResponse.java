@@ -6,6 +6,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class LoginResponse {
+    boolean loginSuccess;
+    String errorMessage;
+    UserResponse user;
     // TODO: Define properties for LoginResponse
 
     // TODO: Define constructors for LoginResponse
