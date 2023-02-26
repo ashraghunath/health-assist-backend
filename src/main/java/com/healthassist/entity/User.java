@@ -5,13 +5,15 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.Set;
 
 @Getter
 @Setter
-
+@Document("users")
 public class User extends DateDomainObject {
     @Id
     private String userId;
@@ -40,4 +42,5 @@ public class User extends DateDomainObject {
     private Date lastPasswordResetDate;
 
     private AuthorityName authority;
+    
 }

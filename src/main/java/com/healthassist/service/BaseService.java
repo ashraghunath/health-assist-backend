@@ -9,11 +9,14 @@ import com.healthassist.request.UserRequest;
 import com.healthassist.response.LoginResponse;
 import com.healthassist.util.EncryptionUtil;
 import com.healthassist.util.TimeUtil;
+import com.healthassist.request.LoginRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 @Service
@@ -24,6 +27,30 @@ public class BaseService {
     @Autowired
     private UserRepository userRepository;
 
+    public LoginResponse login(LoginRequest request, AuthorityName authorityName) {
+        if (request == null) {
+            return createErrorLoginResponse();
+        }
+        User savedUser = userRepository.findByEmailAddress(request.getEmailId().toLowerCase(Locale.ROOT));
+        if (savedUser != null && savedUser.getAuthority()!=null) {
+            if (savedUser.isDeleted()) {
+                return this.createErrorLoginResponse("Your account is permenantly deleted! Please contact administrator.");
+            }
+            if (checkValidLogin(savedUser, request.getPassword())) {
+                return this.createSuccessLoginResponse(savedUser);
+            } else {
+                return this.createErrorLoginResponse();
+            }
+        } else {
+            return this.createErrorLoginResponse("User does not exist. Continue with Registration.");
+        }
+    }
+    
+    private boolean checkValidLogin(User user, String password) {
+        String userPassword = user.getPassword();
+        return userPassword != null && EncryptionUtil.isValidPassword(password, userPassword);
+    }
+    
     public LoginResponse signUp(UserRequest userRequest, AuthorityName authorityName) {
         User user = userMapper.fromPatientRequest(userRequest);
         if (user == null) {
@@ -64,7 +91,7 @@ public class BaseService {
     }
 
     public LoginResponse createErrorLoginResponse() {
-        return this.createErrorLoginResponse("Wrong credentials!");
+        return this.createErrorLoginResponse("Invalid username or password! Please try again.");
     }
 
     public LoginResponse createErrorLoginResponse(String errorMessage) {
