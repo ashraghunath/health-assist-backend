@@ -7,7 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class HealthAssistBackendApplication {
 
 	public static void main(String[] args) {
-		//Testing
 		SpringApplication.run(HealthAssistBackendApplication.class, args);
 	}
 

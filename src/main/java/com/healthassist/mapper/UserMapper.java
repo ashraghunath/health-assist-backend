@@ -37,10 +37,10 @@ public class UserMapper {
     }
 
     public UserCardResponse toUserCardResponse(User user) {
-        UserCardResponse response = new UserCardResponse();
-        response.setFullName(user.getFullName());
-        response.setEmailAddress(user.getEmailAddress());
-        response.setPhoneNumber(user.getPhoneNumber());
-        return response;
+        UserCardResponse userCardResponse = new UserCardResponse();
+        userCardResponse.setEmailAddress(user.getEmailAddress());
+        userCardResponse.setPhoneNumber(user.getPhoneNumber());
+        userCardResponse.setFullName(user.getFullName());
+        return userCardResponse;
     }
 }
