@@ -4,12 +4,12 @@ import com.healthassist.entity.Assessment;
 import com.healthassist.entity.AssessmentResult;
 import com.healthassist.entity.AttemptedQuestion;
 import com.healthassist.exception.AlreadyExistsException;
+import com.healthassist.exception.ResourceNotFoundException;
 import com.healthassist.repository.*;
 import com.healthassist.request.AssessmentSubmissionRequest;
 import com.healthassist.request.AttemptedQuestionRequest;
 import com.healthassist.response.AssessmentResponse;
 import com.healthassist.response.QuestionProjection;
-import com.healthassist.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,22 +20,17 @@ import java.util.List;
 public class AssessmentService {
 
     @Autowired
-    private AssessmentRepository assessmentRepository;
-
-    @Autowired
-    private QuestionRepository questionRepository;
-
-    @Autowired
     PatientRecordService patientRecordService;
-
     @Autowired
     AssessmentResultRepository assessmentResultRepository;
-
     @Autowired
     ActivePatientRepository activePatientRepository;
-
     @Autowired
     AssignedPatientRepository assignedPatientRepository;
+    @Autowired
+    private AssessmentRepository assessmentRepository;
+    @Autowired
+    private QuestionRepository questionRepository;
 
     public AssessmentResponse getAssessment(String assessmentId) {
         AssessmentResponse response = new AssessmentResponse();

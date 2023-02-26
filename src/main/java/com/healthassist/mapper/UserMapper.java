@@ -2,6 +2,7 @@ package com.healthassist.mapper;
 
 import com.healthassist.entity.User;
 import com.healthassist.request.UserRequest;
+import com.healthassist.response.UserCardResponse;
 import com.healthassist.response.UserResponse;
 import com.healthassist.util.TimeUtil;
 import org.springframework.stereotype.Component;
@@ -32,6 +33,14 @@ public class UserMapper {
         response.setCountry(user.getCountry());
         response.setPhoneNumber(user.getPhoneNumber());
         response.setAge(TimeUtil.nowUTC().getYear() - user.getDateOfBirth().getYear());
+        return response;
+    }
+
+    public UserCardResponse toUserCardResponse(User user) {
+        UserCardResponse response = new UserCardResponse();
+        response.setFullName(user.getFullName());
+        response.setEmailAddress(user.getEmailAddress());
+        response.setPhoneNumber(user.getPhoneNumber());
         return response;
     }
 }

@@ -25,22 +25,23 @@ public class User extends DateDomainObject {
     private String city;
 
     private String province;
-
     private String country;
-
     private ZonedDateTime dateOfBirth;
-
     private String phoneNumber;
-
     @Indexed(unique = true)
     private String emailAddress;
-
     private String password;
-
     private boolean deleted;
-
     private Date lastPasswordResetDate;
-
     private AuthorityName authority;
-    
+    private String registrationNumber;
+
+    public String getRegistrationNumber() {
+        return registrationNumber;
+    }
+
+    public void setRegistrationNumber(String registrationNumber) {
+        this.registrationNumber = registrationNumber;
+    }
+
 }
