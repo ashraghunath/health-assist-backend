@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -42,6 +43,5 @@ public class User extends DateDomainObject {
     public void setRegistrationNumber(String registrationNumber) {
         this.registrationNumber = registrationNumber;
     }
-
 
 }
