@@ -4,6 +4,9 @@ import javax.validation.Valid;
 
 import com.healthassist.response.PatientRecordCardResponse;
 import com.healthassist.service.PatientService;
+import com.healthassist.service.CounselorService;
+import com.healthassist.response.PatientRecordResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,15 +30,26 @@ public class CounsellorController {
 	@Autowired
 	private PatientService patientService;
 	
-	@RequestMapping(value = "/login", method = RequestMethod.POST)
+	@Autowired
+	private CounselorService counselorService;
+	
+	
+	
+	@PostMapping(value = "/login")
 	public LoginResponse login(@Valid @RequestBody LoginRequest request) {
 		 
 		return baseService.login(request, AuthorityName.ROLE_COUNSELOR);
 	}
-	@RequestMapping(value = "/patient",method = RequestMethod.GET)
+	
+	@PostMapping(value = "/patient")
 	public Page<PatientRecordCardResponse> getPatientList(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size) {
 		Pageable pageable = PageRequest.of(page, size);
 		return patientService.getActivePatients(pageable);
 	}
+	
+	@GetMapping(value = "/patient/{patientRecordId}")
+    public PatientRecordResponse getPatientRecord(@PathVariable String patientRecordId) {
+        return counselorService.getActivePatient(patientRecordId);
+    }
 	
 }
