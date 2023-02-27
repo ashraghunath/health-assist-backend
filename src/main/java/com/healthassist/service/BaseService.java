@@ -50,9 +50,12 @@ public class BaseService {
         String userPassword = user.getPassword();
         return userPassword != null && EncryptionUtil.isValidPassword(password, userPassword);
     }
+
+    
     
     public LoginResponse signUp(UserRequest userRequest, AuthorityName authorityName) {
         User user = userMapper.fromPatientRequest(userRequest);
+
         if (user == null) {
             return this.createErrorLoginResponse("Invalid user request");
         } else if (user.getEmailAddress() == null) {
