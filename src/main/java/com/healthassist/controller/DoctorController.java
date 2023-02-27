@@ -2,6 +2,7 @@ package com.healthassist.controller;
 
 import com.healthassist.common.AuthorityName;
 import com.healthassist.request.LoginRequest;
+import com.healthassist.request.UserRequest;
 import com.healthassist.response.AssignedPatientResponse;
 import com.healthassist.response.LoginResponse;
 import com.healthassist.service.BaseService;
@@ -29,6 +30,11 @@ public class DoctorController {
 	@PostMapping("/login")
 	public LoginResponse login(@Valid @RequestBody LoginRequest request) {
 		return baseService.login(request, AuthorityName.ROLE_DOCTOR);
+	}
+
+	@PostMapping("/signup")
+	public LoginResponse signUp(@Valid @RequestBody UserRequest request) {
+		return baseService.signUp(request, AuthorityName.ROLE_DOCTOR);
 	}
 	
 	@RequestMapping(value = "/patient", method = RequestMethod.GET)

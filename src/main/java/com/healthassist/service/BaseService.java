@@ -71,6 +71,15 @@ public class BaseService {
             return this.createErrorLoginResponse("Invalid phone number");
         } else if (user.getProvince() == null) {
             return this.createErrorLoginResponse("Invalid province");
+        } else if (authorityName == AuthorityName.ROLE_COUNSELOR || authorityName == AuthorityName.ROLE_DOCTOR) {
+            // If user has ROLE_COUNSELOR or ROLE_DOCTOR, then they are required to have UNIQUE registration number
+            if (user.getRegistrationNumber() == null) {
+                return this.createErrorLoginResponse("invalid registration number");
+            }
+            // check if the registration number is unique
+            if (userRepository.existsByRegistrationNumberAndDeletedFalse(user.getRegistrationNumber())) {
+                return this.createErrorLoginResponse("registration number is already in use");
+            }
         }
         try {
             this.checkIfEmailIsTakenWithException(user.getEmailAddress());
