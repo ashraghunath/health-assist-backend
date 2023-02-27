@@ -20,6 +20,7 @@ public class UserMapper {
         user.setCountry(userRequest.getCountry());
         user.setDateOfBirth(userRequest.getDateOfBirth());
         user.setPhoneNumber(userRequest.getPhoneNumber());
+        user.setRegistrationNumber(userRequest.getRegistrationNumber());
         return user;
     }
 
