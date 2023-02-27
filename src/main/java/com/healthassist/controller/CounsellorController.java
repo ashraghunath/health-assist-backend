@@ -2,6 +2,7 @@ package com.healthassist.controller;
 
 import javax.validation.Valid;
 
+import com.healthassist.request.UserRequest;
 import com.healthassist.response.PatientRecordCardResponse;
 import com.healthassist.service.PatientService;
 import com.healthassist.service.CounselorService;
@@ -40,7 +41,16 @@ public class CounsellorController {
 		 
 		return baseService.login(request, AuthorityName.ROLE_COUNSELOR);
 	}
-	
+
+	@PostMapping(value = "signup")
+	public LoginResponse signup(@Valid @RequestBody UserRequest request){
+
+		return baseService.signUp(request, AuthorityName.ROLE_COUNSELOR);
+	}
+
+
+
+
 	@PostMapping(value = "/patient")
 	public Page<PatientRecordCardResponse> getPatientList(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size) {
 		Pageable pageable = PageRequest.of(page, size);
