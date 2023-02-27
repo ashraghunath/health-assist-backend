@@ -32,7 +32,7 @@ public class BaseService {
             return createErrorLoginResponse();
         }
         User savedUser = userRepository.findByEmailAddress(request.getEmailId().toLowerCase(Locale.ROOT));
-        if (savedUser != null && savedUser.getAuthority()!=null) {
+        if (savedUser != null && savedUser.getAuthority().equals(authorityName)) {
             if (savedUser.isDeleted()) {
                 return this.createErrorLoginResponse("Your account is permenantly deleted! Please contact administrator.");
             }
