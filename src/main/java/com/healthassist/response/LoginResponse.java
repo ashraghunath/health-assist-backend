@@ -9,7 +9,9 @@ public class LoginResponse {
     boolean loginSuccess;
     String errorMessage;
     UserResponse user;
+    String accessToken;
     // TODO: Define properties for LoginResponse
+	
 
     // TODO: Define constructors for LoginResponse
 

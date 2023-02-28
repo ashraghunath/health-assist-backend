@@ -19,47 +19,42 @@ import com.healthassist.request.LoginRequest;
 import com.healthassist.response.LoginResponse;
 import com.healthassist.service.BaseService;
 
-
 @RestController
 @CrossOrigin
 @RequestMapping(value = "/api/v1/counselor")
 public class CounsellorController {
-	
+
 	@Autowired
-    private BaseService baseService;
+	private BaseService baseService;
 
 	@Autowired
 	private PatientService patientService;
-	
+
 	@Autowired
 	private CounselorService counselorService;
-	
-	
-	
+
 	@PostMapping(value = "/login")
 	public LoginResponse login(@Valid @RequestBody LoginRequest request) {
-		 
+
 		return baseService.login(request, AuthorityName.ROLE_COUNSELOR);
 	}
 
-	@PostMapping(value = "signup")
-	public LoginResponse signup(@Valid @RequestBody UserRequest request){
+	@PostMapping(value = "/signup")
+	public LoginResponse signup(@Valid @RequestBody UserRequest request) {
 
 		return baseService.signUp(request, AuthorityName.ROLE_COUNSELOR);
 	}
 
-
-
-
-	@PostMapping(value = "/patient")
-	public Page<PatientRecordCardResponse> getPatientList(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "10") Integer size) {
+	@GetMapping(value = "/patient")
+	public Page<PatientRecordCardResponse> getPatientList(@RequestParam(defaultValue = "0") Integer page,
+			@RequestParam(defaultValue = "10") Integer size) {
 		Pageable pageable = PageRequest.of(page, size);
 		return patientService.getActivePatients(pageable);
 	}
-	
+
 	@GetMapping(value = "/patient/{patientRecordId}")
-    public PatientRecordResponse getPatientRecord(@PathVariable String patientRecordId) {
-        return counselorService.getActivePatient(patientRecordId);
-    }
-	
+	public PatientRecordResponse getPatientRecord(@PathVariable String patientRecordId) {
+		return counselorService.getActivePatient(patientRecordId);
+	}
+
 }

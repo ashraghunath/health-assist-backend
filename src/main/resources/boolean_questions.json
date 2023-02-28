@@ -1,0 +1,55 @@
+[{
+  "_id": {
+    "$oid": "63f6a9a02389e190782d5680"
+  },
+  "questionId": "question1",
+  "question": "Over the past 2 weeks, how often have you been bothered by any of the following problems: Little interest or pleasure in doing things?"
+},{
+  "_id": {
+    "$oid": "63f6a9b0f27409ed4695190a"
+  },
+  "questionId": "question2",
+  "question": "Over the past 2 weeks, how often have you been bothered by any of the following problems: Feeling down, depressed or hopless?"
+},{
+  "_id": {
+    "$oid": "63f6aa862389e190782d5681"
+  },
+  "questionId": "question3",
+  "question": "Over the past 2 weeks, how often have you been bothered by any of the following problems: Trouble falling asleep, staying asleep, or sleeping too much?"
+},{
+  "_id": {
+    "$oid": "63f6ab602389e190782d5682"
+  },
+  "questionId": "question4",
+  "question": "Over the past 2 weeks, how often have you been bothered by any of the following problems: Feeling tired or having little energy?"
+},{
+  "_id": {
+    "$oid": "63f6acd02389e190782d5683"
+  },
+  "questionId": "question5",
+  "question": "Over the past 2 weeks, how often have you been bothered by any of the following problems: Poor appetite or overeating?"
+},{
+  "_id": {
+    "$oid": "63f6acd02389e190782d5684"
+  },
+  "questionId": "question6",
+  "question": "Over the past 2 weeks, how often have you been bothered by any of the following problems: Feeling bad about yourself - or that you're a failure or have let yourself or your family down?"
+},{
+  "_id": {
+    "$oid": "63f6acd02389e190782d5685"
+  },
+  "questionId": "question7",
+  "question": "Over the past 2 weeks, how often have you been bothered by any of the following problems: Trouble concentrating on things, such as reading the newspaper or watching television?"
+},{
+  "_id": {
+    "$oid": "63f6acd02389e190782d5686"
+  },
+  "questionId": "question8",
+  "question": "Over the past 2 weeks, how often have you been bothered by any of the following problems: Moving or speaking so slowly that other people could have noticed. Or, the opposite - being so fidgety or restless that you have been moving around a lot more than usual?"
+},{
+  "_id": {
+    "$oid": "63f6acd02389e190782d5687"
+  },
+  "questionId": "question9",
+  "question": "Over the past 2 weeks, how often have you been bothered by any of the following problems: Thoughts that you would be better off dead or of hurting yourself in some way?"
+}]

@@ -29,6 +29,7 @@ public class DoctorController {
 
 	@PostMapping("/login")
 	public LoginResponse login(@Valid @RequestBody LoginRequest request) {
+		System.out.print("here ins hte mail:" + request.getEmailId());
 		return baseService.login(request, AuthorityName.ROLE_DOCTOR);
 	}
 
