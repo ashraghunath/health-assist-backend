@@ -12,15 +12,15 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserJWT implements UserDetails {
-
+	private static final long serialVersionUID = 1L;
 	private final String id;
 	private final String emailAddress;
 	private final String password;
 	private final Collection<? extends GrantedAuthority> authorities;
 	private final Date lastPasswordResetDate;
 
-	public UserJWT(String id, String emailAddress, String password,
-			Collection<? extends GrantedAuthority> authorities, Date lastPasswordResetDate) {
+	public UserJWT(String id, String emailAddress, String password, Collection<? extends GrantedAuthority> authorities,
+			Date lastPasswordResetDate) {
 		this.id = id;
 		this.emailAddress = emailAddress;
 		this.password = password;

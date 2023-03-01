@@ -7,14 +7,13 @@ import com.healthassist.mapper.UserMapper;
 import com.healthassist.repository.UserRepository;
 import com.healthassist.request.UserRequest;
 import com.healthassist.response.LoginResponse;
+import com.healthassist.util.EncryptionUtil;
 import com.healthassist.security.JwTService;
 import com.healthassist.security.UserJWT;
-import com.healthassist.util.EncryptionUtil;
-import com.healthassist.util.TimeUtil;
 import com.healthassist.request.LoginRequest;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -29,7 +28,7 @@ public class BaseService {
 
     @Autowired
     private UserRepository userRepository;
-    
+
     @Autowired
     JwTService jwtTokenUtil;
 
@@ -40,8 +39,6 @@ public class BaseService {
         if (request == null) {
             return createErrorLoginResponse();
         }
-        System.out.println("The mail Id:" + request.getEmailId());
-        
         User savedUser = userRepository.findByEmailAddress(request.getEmailId().toLowerCase(Locale.ROOT));
         if (savedUser != null && savedUser.getAuthority().equals(authorityName)) {
             if (savedUser.isDeleted()) {
@@ -121,14 +118,13 @@ public class BaseService {
         LoginResponse response = new LoginResponse();
         response.setLoginSuccess(false);
         response.setErrorMessage(errorMessage);
-        
         return response;
     }
     public LoginResponse createSuccessLoginResponse(User savedUser) {
         LoginResponse response = new LoginResponse();
         response.setUser(userMapper.toUserResponse(savedUser));
         response.setLoginSuccess(true);
-        //TODO : set access token and status
+
         UserJWT userDetails = (UserJWT) userDetailsService.loadUserByUsername(savedUser.getEmailAddress());
         response.setAccessToken(jwtTokenUtil.generateToken(userDetails));
         return response;
