@@ -8,6 +8,7 @@ import lombok.Setter;
 public class LoginResponse {
     boolean loginSuccess;
     String errorMessage;
+    String accessToken;
     UserResponse user;
     // TODO: Define properties for LoginResponse
 

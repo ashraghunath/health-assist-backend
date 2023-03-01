@@ -8,8 +8,10 @@ import com.healthassist.repository.UserRepository;
 import com.healthassist.request.UserRequest;
 import com.healthassist.response.LoginResponse;
 import com.healthassist.util.EncryptionUtil;
-import com.healthassist.util.TimeUtil;
+import com.healthassist.security.JwTService;
+import com.healthassist.security.UserJWT;
 import com.healthassist.request.LoginRequest;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,12 @@ public class BaseService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    JwTService jwtTokenUtil;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     public LoginResponse login(LoginRequest request, AuthorityName authorityName) {
         if (request == null) {
@@ -116,7 +124,9 @@ public class BaseService {
         LoginResponse response = new LoginResponse();
         response.setUser(userMapper.toUserResponse(savedUser));
         response.setLoginSuccess(true);
-        //TODO : set access token and status
+
+        UserJWT userDetails = (UserJWT) userDetailsService.loadUserByUsername(savedUser.getEmailAddress());
+        response.setAccessToken(jwtTokenUtil.generateToken(userDetails));
         return response;
     }
     private boolean checkIfEmailIsTaken(String email) {
