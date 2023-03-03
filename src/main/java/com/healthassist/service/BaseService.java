@@ -30,14 +30,14 @@ public class BaseService {
     private UserRepository userRepository;
 
     @Autowired
-    JwTService jwtTokenUtil;
+    JwTService jwtService;
 
     @Autowired
     private UserDetailsService userDetailsService;
 
     public LoginResponse login(LoginRequest request, AuthorityName authorityName) {
         if (request == null) {
-            return createErrorLoginResponse();
+            return createErrorLoginResponse("Invalid username or password! Please try again.");
         }
         User savedUser = userRepository.findByEmailAddress(request.getEmailId().toLowerCase(Locale.ROOT));
         if (savedUser != null && savedUser.getAuthority().equals(authorityName)) {
@@ -47,7 +47,7 @@ public class BaseService {
             if (checkValidLogin(savedUser, request.getPassword())) {
                 return this.createSuccessLoginResponse(savedUser);
             } else {
-                return this.createErrorLoginResponse();
+                return this.createErrorLoginResponse("Invalid username or password! Please try again.");
             }
         } else {
             return this.createErrorLoginResponse("User does not exist. Continue with Registration.");
@@ -83,7 +83,7 @@ public class BaseService {
         } else if (user.getProvince() == null) {
             return this.createErrorLoginResponse("Invalid province");
         } else if (authorityName == AuthorityName.ROLE_COUNSELOR || authorityName == AuthorityName.ROLE_DOCTOR) {
-            // If user has ROLE_COUNSELOR or ROLE_DOCTOR, then they are required to have UNIQUE registration number
+            // UNIQUE registration number, a mandatory field for COUNSELOR and DOCTOR
             if (user.getRegistrationNumber() == null) {
                 return this.createErrorLoginResponse("invalid registration number");
             }
@@ -110,9 +110,9 @@ public class BaseService {
         return this.createSuccessLoginResponse(savedUser);
     }
 
-    public LoginResponse createErrorLoginResponse() {
-        return this.createErrorLoginResponse("Invalid username or password! Please try again.");
-    }
+//    public LoginResponse createErrorLoginResponse() {
+//        return this.createErrorLoginResponse("Invalid username or password! Please try again.");
+//    }
 
     public LoginResponse createErrorLoginResponse(String errorMessage) {
         LoginResponse response = new LoginResponse();
@@ -126,7 +126,7 @@ public class BaseService {
         response.setLoginSuccess(true);
 
         UserJWT userDetails = (UserJWT) userDetailsService.loadUserByUsername(savedUser.getEmailAddress());
-        response.setAccessToken(jwtTokenUtil.generateToken(userDetails));
+        response.setAccessToken(jwtService.generateToken(userDetails));
         return response;
     }
     private boolean checkIfEmailIsTaken(String email) {

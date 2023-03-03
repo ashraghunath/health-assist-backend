@@ -23,8 +23,7 @@ public class WebTokensAuthenticationEntryPoint implements AuthenticationEntryPoi
 		// credentials
 		// We should just send a 401 Unauthorized response because there is no 'login
 		// page' to redirect
-		// to
-		System.out.println("here is the entry point");
+		// toq
 		response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
 	}
 }
