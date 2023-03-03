@@ -5,6 +5,7 @@ import com.healthassist.request.LoginRequest;
 import com.healthassist.request.UserRequest;
 import com.healthassist.response.AssignedPatientResponse;
 import com.healthassist.response.LoginResponse;
+import com.healthassist.response.PatientRecordResponse;
 import com.healthassist.service.BaseService;
 import com.healthassist.service.DoctorService;
 
@@ -43,4 +44,9 @@ public class DoctorController {
 		Pageable paging = PageRequest.of(page, size);
 		return doctorService.getAssignedPatients(paging);
 	}
+	
+	@RequestMapping(value = "/patient/{patientRecordId}", method = RequestMethod.GET)
+    public PatientRecordResponse getPatientRecord(@PathVariable String patientRecordId) {
+        return doctorService.getActivePatient(patientRecordId);
+    }
 }
