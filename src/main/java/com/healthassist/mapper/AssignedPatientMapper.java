@@ -31,7 +31,8 @@ public class AssignedPatientMapper {
 
     public AssignedPatientResponse toAssignedPatientResponse(AssignedPatient assignedPatient) {
         if (patientRecordRepository.existsByPatientRecordId(assignedPatient.getPatientRecordId())) {
-            PatientRecord patientRecord = patientRecordRepository.findByPatientRecordId(assignedPatient.getPatientRecordId());
+            PatientRecord patientRecord = patientRecordRepository.findByPatientRecordId(assignedPatient.getPatientRecordId())
+            		.orElseThrow(() -> new ResourceNotFoundException("Patient not found"));
             AssignedPatientResponse appointmentResponse = new AssignedPatientResponse();
 
             appointmentResponse.setPatientRecordId(assignedPatient.getPatientRecordId());
