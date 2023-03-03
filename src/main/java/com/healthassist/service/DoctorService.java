@@ -35,11 +35,10 @@ public class DoctorService {
 	@Autowired
 	PatientService patientService;
 
-	public Page<AssignedPatientResponse> getAssignedPatients(Pageable pageable) {
-//      String userRegisterNumber = userCommonService.getUser().getRegistrationNumber();
-		String userRegisterNumber = "123";
-		Page<AssignedPatient> assignedPatientPage = assignedPatientRepository
-				.findByDoctorRegistrationNumberOrderByCreatedAtDesc(userRegisterNumber, pageable);
+    public Page<AssignedPatientResponse> getAssignedPatients(Pageable pageable) {
+	     String userRegisterNumber = userCommonService.getUser().getRegistrationNumber();
+
+        Page<AssignedPatient> assignedPatientPage = assignedPatientRepository.findByDoctorRegistrationNumberOrderByCreatedAtDesc(userRegisterNumber, pageable);
 
 		return assignedPatientPage.map(assignedPatientMapper::toAssignedPatientResponse);
 	}

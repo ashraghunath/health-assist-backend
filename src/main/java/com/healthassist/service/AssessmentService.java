@@ -1,5 +1,6 @@
 package com.healthassist.service;
 
+import com.healthassist.common.UserCommonService;
 import com.healthassist.entity.Assessment;
 import com.healthassist.entity.AssessmentResult;
 import com.healthassist.entity.AttemptedQuestion;
@@ -10,6 +11,8 @@ import com.healthassist.request.AssessmentSubmissionRequest;
 import com.healthassist.request.AttemptedQuestionRequest;
 import com.healthassist.response.AssessmentResponse;
 import com.healthassist.response.QuestionProjection;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +34,11 @@ public class AssessmentService {
     private AssessmentRepository assessmentRepository;
     @Autowired
     private QuestionRepository questionRepository;
+    @Autowired
+    UserCommonService userCommonService;
+
+    public AssessmentService() {
+    }
 
     public AssessmentResponse getAssessment(String assessmentId) {
         AssessmentResponse response = new AssessmentResponse();
@@ -43,10 +51,8 @@ public class AssessmentService {
     }
 
     public void storeAssessmentResult(String assessmentId, AssessmentSubmissionRequest assessmentRequest) {
-
-        //TODO: Retrieve user ID from userCommonService;
-        String userId = null;
-//
+        
+    	 String userId = userCommonService.getUser().getUserId();
         // Check if user already has an active or assigned patient file
         if (activePatientRepository.existsByPatientId(userId) ||
                 assignedPatientRepository.existsByPatientId(userId)) {

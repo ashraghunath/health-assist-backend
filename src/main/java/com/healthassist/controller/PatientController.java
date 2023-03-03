@@ -2,6 +2,7 @@ package com.healthassist.controller;
 
 import com.healthassist.common.AuthorityName;
 import com.healthassist.request.AssessmentSubmissionRequest;
+import com.healthassist.request.LoginRequest;
 import com.healthassist.request.UserRequest;
 import com.healthassist.response.AssessmentResponse;
 import com.healthassist.response.LoginResponse;
@@ -38,6 +39,10 @@ public class PatientController {
         assessmentService.storeAssessmentResult(assessmentId, assessmentSubmissionRequest);
     }
 
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    public LoginResponse login(@Valid @RequestBody LoginRequest request) {
+        return baseService.login(request, AuthorityName.ROLE_PATIENT);
+    }
 
 
 }

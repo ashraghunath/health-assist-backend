@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin
 @RequestMapping(value = "/api/v1/doctor")
 
-public class DoctorController {
+public class 	DoctorController {
 	@Autowired
 	private DoctorService doctorService;
 
