@@ -1,20 +1,24 @@
 package com.healthassist.entity;
 
-import com.healthassist.util.TimeUtil;
+import java.time.LocalDate;
+
+//import com.healthassist.util.TimeUtil;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.ZonedDateTime;
 
 @Getter
 @Setter
 abstract class DateDomainObject {
-    private ZonedDateTime createdAt;
+    private LocalDate createdAt;
 
-    private ZonedDateTime updatedAt;
+    private LocalDate updatedAt;
 
     public DateDomainObject() {
-        this.createdAt = TimeUtil.nowUTC();
-        this.updatedAt = TimeUtil.nowUTC();
+        this.createdAt = LocalDate.now();
+        this.updatedAt = LocalDate.now();
+    }
+    
+    public void update() {
+        this.updatedAt = LocalDate.now();
     }
 }
