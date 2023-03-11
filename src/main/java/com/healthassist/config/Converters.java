@@ -10,12 +10,9 @@ import java.util.Arrays;
 
 @Configuration
 public class Converters {
-    @Bean
-    public MongoCustomConversions mongoCustomConversions() {
-        return new MongoCustomConversions(
-                Arrays.asList(
-                        new LocalDateTimeWriteConverter(),
-                        new LocalDateTimeReadConverter()
-                ));
-    }
+	@Bean
+	public MongoCustomConversions mongoCustomConversions() {
+		return new MongoCustomConversions(
+				Arrays.asList(new LocalDateTimeWriteConverter(), new LocalDateTimeReadConverter()));
+	}
 }
