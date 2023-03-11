@@ -1,5 +1,7 @@
 package com.healthassist.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import com.healthassist.request.UserRequest;
@@ -15,8 +17,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import com.healthassist.common.AuthorityName;
+import com.healthassist.request.AppointmentListForDateRequest;
 import com.healthassist.request.AppointmentRequest;
 import com.healthassist.request.LoginRequest;
+import com.healthassist.response.AppointmentListForDateResponse;
 import com.healthassist.response.LoginResponse;
 import com.healthassist.service.BaseService;
 
@@ -57,14 +61,14 @@ public class CounsellorController {
 		return counselorService.getActivePatient(patientRecordId);
 	}
 	
-	 @RequestMapping(value = "/patient/appointment", method = RequestMethod.POST)
+	 @PostMapping(value = "/patient/appointment")
 	    public void makeCounselorAppointment(@Valid @RequestBody AppointmentRequest appointmentRequest) {
 	        counselorService.storeCounselorAppointment(appointmentRequest);
 	    }
-
-//	@GetMapping(value = "/test")
-//	public String test(){
-//		return "hit the test call please";
-//	}
+	 
+	 @PostMapping(value = "/patient/appointments")
+	    public List<AppointmentListForDateResponse> getCounselorAppointmentsByDate(@Valid @RequestBody AppointmentListForDateRequest request) {
+	        return counselorService.getCounselorAppointmentsByDate(request);
+	    }
 
 }
