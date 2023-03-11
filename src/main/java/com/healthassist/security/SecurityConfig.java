@@ -31,9 +31,6 @@ public class SecurityConfig {
 	@Value("${jwt.header}")
 	private String tokenHeader;
 
-	@Value("${jwt.cookieName}")
-	private String tokenCookieName;
-	// provision for future cookie implementation
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -52,7 +49,7 @@ public class SecurityConfig {
 				.antMatchers("/api/v1/doctor/patient").hasAuthority("ROLE_DOCTOR");
 
 		JWTAuthenticationFilter authenticationTokenFilter = new JWTAuthenticationFilter(jwtUserDetailsService,
-				jwtService, tokenHeader, tokenCookieName);
+				jwtService, tokenHeader);
 		http.addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
 		http.headers().cacheControl();
 		return http.build();
