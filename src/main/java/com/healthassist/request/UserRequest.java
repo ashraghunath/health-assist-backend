@@ -3,6 +3,7 @@ package com.healthassist.request;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 @Getter
 @Setter
@@ -19,7 +20,7 @@ public class UserRequest {
 
     private String country;
 
-    private ZonedDateTime dateOfBirth;
+    private LocalDate dateOfBirth;
 
     private String phoneNumber;
 

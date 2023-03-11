@@ -1,7 +1,7 @@
 package com.healthassist.config;
 
-import com.healthassist.converter.ZonedDateTimeReadConverter;
-import com.healthassist.converter.ZonedDateTimeWriteConverter;
+import com.healthassist.converter.LocalDateTimeReadConverter;
+import com.healthassist.converter.LocalDateTimeWriteConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
@@ -14,8 +14,8 @@ public class Converters {
     public MongoCustomConversions mongoCustomConversions() {
         return new MongoCustomConversions(
                 Arrays.asList(
-                        new ZonedDateTimeWriteConverter(),
-                        new ZonedDateTimeReadConverter()
+                        new LocalDateTimeWriteConverter(),
+                        new LocalDateTimeReadConverter()
                 ));
     }
 }

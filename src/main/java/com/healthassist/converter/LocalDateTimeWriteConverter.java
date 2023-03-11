@@ -8,7 +8,7 @@ import java.time.ZonedDateTime;
 
 @Component
 @WritingConverter
-public class ZonedDateTimeWriteConverter implements Converter<ZonedDateTime, Long> {
+public class LocalDateTimeWriteConverter implements Converter<ZonedDateTime, Long> {
     @Override
     public Long convert(ZonedDateTime zonedDateTime) {
         return zonedDateTime.toInstant().toEpochMilli();

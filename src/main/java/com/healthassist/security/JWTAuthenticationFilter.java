@@ -28,14 +28,14 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
 	private String tokenHeader;
 
-	private String tokenCookieName;
+	
 
 	public JWTAuthenticationFilter(JwtUserDetailService jwtUserDetailsService, JwTService jwtService,
-			String tokenHeader, String tokenCookieName) {
+			String tokenHeader) {
 		this.jwtUserDetailsService = jwtUserDetailsService;
 		this.jwtService = jwtService;
 		this.tokenHeader = tokenHeader;
-		this.tokenCookieName = tokenCookieName;
+		
 	}
 
 	@Override
