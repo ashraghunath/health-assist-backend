@@ -1,5 +1,6 @@
 package com.healthassist.response;
 
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 
 import lombok.Getter;
@@ -15,9 +16,9 @@ public class AssignedPatientResponse {
 
     private CounselorDoctorCardResponse counselor;
 
-    private ZonedDateTime assignedAt;
+    private LocalDate assignedAt;
 
-    private ZonedDateTime assessmentCreatedAt;
+    private LocalDate assessmentCreatedAt;
 
 
 }

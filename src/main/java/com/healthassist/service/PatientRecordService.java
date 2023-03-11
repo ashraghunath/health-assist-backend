@@ -3,6 +3,7 @@ package com.healthassist.service;
 import com.healthassist.common.PatientRecordStatus;
 import com.healthassist.entity.ActivePatient;
 import com.healthassist.entity.AssessmentResult;
+import com.healthassist.entity.CounselorAppointment;
 import com.healthassist.entity.PatientRecord;
 import com.healthassist.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,4 +42,19 @@ public class PatientRecordService {
         patientRecord.setActivePatientId(activePatient.getActivePatientId());
         return patientRecordRepository.save(patientRecord);
     }
+
+	public PatientRecord afterAppointment(CounselorAppointment counselorAppointment, PatientRecord patientRecord,
+			PatientRecordStatus status) {
+		// TODO Auto-generated method stub
+		
+		if (status == PatientRecordStatus.COUNSELOR_APPOINTMENT || status == PatientRecordStatus.DOCTOR_APPOINTMENT) {
+            // update patient record (ActivePatient)
+            patientRecord.update();
+            patientRecord.setAppointmentId(counselorAppointment.getAppointmentId());
+            patientRecord.setStatus(status);
+            return patientRecordRepository.save(patientRecord);
+        }
+		return null;
+		
+	}
 }

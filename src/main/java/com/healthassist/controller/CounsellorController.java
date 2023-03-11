@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import com.healthassist.common.AuthorityName;
+import com.healthassist.request.AppointmentRequest;
 import com.healthassist.request.LoginRequest;
 import com.healthassist.response.LoginResponse;
 import com.healthassist.service.BaseService;
@@ -55,6 +56,11 @@ public class CounsellorController {
 	public PatientRecordResponse getPatientRecord(@PathVariable String patientRecordId) {
 		return counselorService.getActivePatient(patientRecordId);
 	}
+	
+	 @RequestMapping(value = "/patient/appointment", method = RequestMethod.POST)
+	    public void makeCounselorAppointment(@Valid @RequestBody AppointmentRequest appointmentRequest) {
+	        counselorService.storeCounselorAppointment(appointmentRequest);
+	    }
 
 //	@GetMapping(value = "/test")
 //	public String test(){
