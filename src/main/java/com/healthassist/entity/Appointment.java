@@ -1,6 +1,6 @@
 package com.healthassist.entity;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -21,8 +21,8 @@ public class Appointment extends DateDomainObject {
 
 	    private String patientId;
 
-	    private LocalDate startDateTime;
+	    private LocalDateTime startDateTime;
 
-	    private LocalDate endDateTime;
+	    private LocalDateTime endDateTime;
 
 }

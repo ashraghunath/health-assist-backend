@@ -1,6 +1,6 @@
 package com.healthassist.entity;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 //import com.healthassist.util.TimeUtil;
 import lombok.Getter;
@@ -9,16 +9,16 @@ import lombok.Setter;
 @Getter
 @Setter
 abstract class DateDomainObject {
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
-    private LocalDate updatedAt;
+    private LocalDateTime updatedAt;
 
     public DateDomainObject() {
-        this.createdAt = LocalDate.now();
-        this.updatedAt = LocalDate.now();
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
     
     public void update() {
-        this.updatedAt = LocalDate.now();
+        this.updatedAt = LocalDateTime.now();
     }
 }

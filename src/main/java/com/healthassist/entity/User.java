@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Set;
@@ -27,7 +28,7 @@ public class User extends DateDomainObject {
 
     private String province;
     private String country;
-    private LocalDate dateOfBirth;
+    private LocalDateTime dateOfBirth;
     private String phoneNumber;
     @Indexed(unique = true)
     private String emailAddress;

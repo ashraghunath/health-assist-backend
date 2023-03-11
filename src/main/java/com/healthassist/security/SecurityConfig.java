@@ -46,6 +46,7 @@ public class SecurityConfig {
 				.antMatchers(HttpMethod.GET, "/api/v1/patient/assessment/**").hasAuthority("ROLE_PATIENT")
 				.antMatchers(HttpMethod.GET, "/api/v1/counselor/patient").hasAuthority("ROLE_COUNSELOR")
 				.antMatchers(HttpMethod.POST, "/api/v1/counselor/patient/appointment").hasAuthority("ROLE_COUNSELOR")
+				.antMatchers(HttpMethod.POST, "/api/v1/counselor/patient/appointments").hasAuthority("ROLE_COUNSELOR")
 				.antMatchers("/api/v1/counselor/patient/**").hasAuthority("ROLE_COUNSELOR")
 				.antMatchers("/api/v1/doctor/patient").hasAuthority("ROLE_DOCTOR");
 

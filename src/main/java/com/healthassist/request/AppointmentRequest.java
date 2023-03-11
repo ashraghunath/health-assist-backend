@@ -1,6 +1,6 @@
 package com.healthassist.request;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +10,7 @@ import lombok.Setter;
 public class AppointmentRequest {
     private String patientRecordId;
 
-    private LocalDate startDateTime;
+    private LocalDateTime startDateTime;
 
-    private LocalDate endDateTime;
+    private LocalDateTime endDateTime;
 }

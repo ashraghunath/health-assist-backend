@@ -6,14 +6,15 @@ import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 @Component
 @ReadingConverter
-public class LocalDateTimeReadConverter implements Converter<Long, LocalDate> {
+public class LocalDateTimeReadConverter implements Converter<Long, LocalDateTime> {
     @Override
-    public LocalDate convert(Long date) {
-        return Instant.ofEpochMilli(date).atZone(ZoneOffset.UTC).toLocalDate();
+    public LocalDateTime convert(Long date) {
+        return Instant.ofEpochMilli(date).atZone(ZoneOffset.UTC).toLocalDateTime();
     }
 }
