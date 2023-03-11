@@ -13,16 +13,16 @@ import lombok.Setter;
 
 public class Appointment extends DateDomainObject {
 
-	    @Id
-	    private String appointmentId;
+	@Id
+	private String appointmentId;
 
-	    @Indexed(unique = true)
-	    private String patientRecordId;
+	@Indexed(unique = true)
+	private String patientRecordId;
 
-	    private String patientId;
+	private String patientId;
 
-	    private LocalDateTime startDateTime;
+	private LocalDateTime startDateTime;
 
-	    private LocalDateTime endDateTime;
+	private LocalDateTime endDateTime;
 
 }

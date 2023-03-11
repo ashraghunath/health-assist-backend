@@ -67,7 +67,8 @@ public class CounsellorController {
 	    }
 	 
 	 @PostMapping(value = "/patient/appointments")
-	    public List<AppointmentListForDateResponse> getCounselorAppointmentsByDate(@Valid @RequestBody AppointmentListForDateRequest request) {
+		public List<AppointmentListForDateResponse> getCounselorAppointmentsByDate(
+				@Valid @RequestBody AppointmentListForDateRequest request) {
 	        return counselorService.getCounselorAppointmentsByDate(request);
 	    }
 
