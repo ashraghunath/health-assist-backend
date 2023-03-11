@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
 @Getter
@@ -11,5 +12,5 @@ import java.time.ZonedDateTime;
 public class PatientRecordCardResponse {
     private String patientRecordId;
     private UserCardResponse patient;
-    private LocalDate assessmentCreatedAt;
+    private LocalDateTime assessmentCreatedAt;
 }

@@ -1,6 +1,8 @@
 package com.healthassist.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 import javax.validation.Valid;
 
@@ -11,14 +13,17 @@ import com.healthassist.common.PatientRecordStatus;
 import com.healthassist.common.UserCommonService;
 import com.healthassist.entity.CounselorAppointment;
 import com.healthassist.entity.PatientRecord;
+import com.healthassist.entity.User;
 import com.healthassist.exception.AlreadyExistsException;
 import com.healthassist.exception.InvalidAppointmentRequestException;
 import com.healthassist.exception.ResourceNotFoundException;
+import com.healthassist.response.AppointmentListForDateResponse;
 import com.healthassist.response.PatientRecordResponse;
 import com.healthassist.service.PatientService;
 import com.healthassist.mapper.AppointmentMapper;
 import com.healthassist.mapper.UserMapper;
 import com.healthassist.repository.UserRepository;
+import com.healthassist.request.AppointmentListForDateRequest;
 import com.healthassist.request.AppointmentRequest;
 import com.healthassist.repository.CounselorAppointmentRepository;
 import com.healthassist.repository.PatientRecordRepository;
@@ -65,20 +70,23 @@ public class CounselorService {
 	public void storeCounselorAppointment(@Valid AppointmentRequest appointmentRequest) {
 		// TODO Auto-generated method stub
 		String counselorId = userCommonService.getUser().getUserId();
-		LocalDate currentDateTime = LocalDate.now();
+		LocalDateTime currentDateTime = LocalDateTime.now();
 		if (appointmentRequest.getStartDateTime().isBefore(currentDateTime)
-				|| appointmentRequest.getStartDateTime().isEqual(currentDateTime)
+				|| appointmentRequest.getStartDateTime().isEqual(currentDateTime) 
 				|| appointmentRequest.getStartDateTime().isAfter(appointmentRequest.getEndDateTime())
 				|| appointmentRequest.getStartDateTime().isEqual(appointmentRequest.getEndDateTime())) {
+			System.out.println("1");
 			throw new InvalidAppointmentRequestException("Invalid values entered!! Select appropriate date and time to make an appointment");
 		}
+		
 		if (!patientRecordRepository.existsByPatientRecordId(appointmentRequest.getPatientRecordId())) {
+			System.out.println("nothing" + patientRecordRepository.existsByPatientRecordId(appointmentRequest.getPatientRecordId()));
 			throw new ResourceNotFoundException(
 					String.format("patient record %s not found", appointmentRequest.getPatientRecordId()));
 		}
 		
 		if (counselorAppointmentRepository.existsByPatientRecordId(appointmentRequest.getPatientRecordId())) {
-			throw new AlreadyExistsException("The Timeslot ir Reserved. Please select again!");
+			throw new AlreadyExistsException("The Timeslot is Reserved. Please select again! When the sharpest words wanna cut me down");
 		}
 		
 		if (counselorAppointmentRepository.existsByCounselorIdAndStartDateTimeBetweenOrStartDateTimeEquals(counselorId,
@@ -94,7 +102,7 @@ public class CounselorService {
 				.findByPatientRecordId(appointmentRequest.getPatientRecordId()).orElseThrow(()->new ResourceNotFoundException("Patient not found"));
 		if (patientRecord.getStatus() != PatientRecordStatus.COUNSELOR_IN_PROGRESS) {
 			throw new ResourceNotFoundException(
-					String.format("Patient record %s not found", appointmentRequest.getPatientRecordId()));
+					String.format("Patient with %s has already been booked!!", appointmentRequest.getPatientRecordId()));
 		}
 		
 		CounselorAppointment counselorAppointment = appointmentMapper
@@ -103,6 +111,19 @@ public class CounselorService {
 		
 		patientRecordService.afterAppointment(counselorAppointment, patientRecord,
 				PatientRecordStatus.COUNSELOR_APPOINTMENT);
+		
+	}
+
+	public List<AppointmentListForDateResponse> getCounselorAppointmentsByDate(
+			@Valid AppointmentListForDateRequest request) {
+		
+			if (request.getDate() == null) {
+				throw new InvalidAppointmentRequestException("date cannot be null");
+			}
+			User user = userCommonService.getUser();
+
+			return counselorAppointmentRepository.findByCounselorIdAndStartDateTimeBetweenOrderByCreatedAtDesc(user.getUserId(),
+					request.getDate(), request.getDate().plusDays(1));
 		
 	}
 

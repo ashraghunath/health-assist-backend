@@ -1,19 +1,25 @@
 package com.healthassist.repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.healthassist.entity.CounselorAppointment;
+import com.healthassist.response.AppointmentListForDateResponse;
 
 public interface CounselorAppointmentRepository extends MongoRepository<CounselorAppointment, String>{
 
 	boolean existsByPatientRecordId(String patientRecordId);
 
-	boolean existsByCounselorIdAndStartDateTimeBetweenOrStartDateTimeEquals(String counselorId, LocalDate startDateTime,
-			LocalDate endDateTime, LocalDate startDateTime2);
+	boolean existsByCounselorIdAndStartDateTimeBetweenOrStartDateTimeEquals(String counselorId, LocalDateTime startDateTime,
+			LocalDateTime endDateTime, LocalDateTime startDateTime2);
 
-	boolean existsByCounselorIdAndEndDateTimeBetweenOrEndDateTimeEquals(String counselorId, LocalDate startDateTime,
-			LocalDate endDateTime, LocalDate endDateTime2);
+	boolean existsByCounselorIdAndEndDateTimeBetweenOrEndDateTimeEquals(String counselorId, LocalDateTime startDateTime,
+			LocalDateTime endDateTime, LocalDateTime endDateTime2);
+
+	List<AppointmentListForDateResponse> findByCounselorIdAndStartDateTimeBetweenOrderByCreatedAtDesc(String userId,
+			LocalDateTime date, LocalDateTime plusDays);
 	
 }
