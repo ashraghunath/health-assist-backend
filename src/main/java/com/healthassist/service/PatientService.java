@@ -1,19 +1,20 @@
 package com.healthassist.service;
 
-import com.healthassist.entity.ActivePatient;
+import com.healthassist.common.AuthorityName;
+import com.healthassist.common.PatientRecordStatus;
+import com.healthassist.common.UserCommonService;
+import com.healthassist.entity.*;
+import com.healthassist.exception.ResourceNotFoundException;
 import com.healthassist.mapper.ActivePatientMapper;
-import com.healthassist.repository.ActivePatientRepository;
+import com.healthassist.repository.*;
 import com.healthassist.response.AssessmentResultResponse;
 import com.healthassist.response.PatientRecordCardResponse;
-import com.healthassist.repository.QuestionRepository;
-import com.healthassist.repository.AssessmentResultRepository;
-import com.healthassist.entity.AssessmentResult;
-import com.healthassist.entity.AttemptedQuestion;
 import com.healthassist.response.AttemptedQuestionResponse;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.healthassist.response.PatientRecordStatusResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,15 +24,20 @@ import org.springframework.stereotype.Service;
 public class PatientService {
     @Autowired
     ActivePatientRepository activePatientRepository;
-    
     @Autowired
     QuestionRepository questionRepository;
-    
     @Autowired
     ActivePatientMapper activePatientMapper;
-    
     @Autowired
     AssessmentResultRepository assessmentResultRepository;
+    @Autowired
+    UserCommonService userCommonService;
+    @Autowired
+    PatientRecordRepository patientRecordRepository;
+    @Autowired
+    CounselorAppointmentRepository counselorAppointmentRepository;
+    @Autowired
+    DoctorAppointmentRepository doctorAppointmentRepository;
     
     public Page<PatientRecordCardResponse> getActivePatients(Pageable pageable) {
         Page<ActivePatient> activePatients =  activePatientRepository.findAll(pageable);
@@ -50,5 +56,38 @@ public class PatientService {
         }
         assessmentResultResponse.setAttemptedQuestions(attemptedQuestionResponses);
         return assessmentResultResponse;
+    }
+
+    public PatientRecordStatusResponse getPatientRecordStatus() {
+        User user = userCommonService.getUser();
+        return getPatientRecordStatus(user);
+    }
+
+    public PatientRecordStatusResponse getPatientRecordStatus(User user) {
+        PatientRecordStatusResponse patientRecordStatusResponse =
+                new PatientRecordStatusResponse();
+        patientRecordStatusResponse.setPatientRecordStatus(PatientRecordStatus.NULL);
+        if(!user.getAuthority().equals(AuthorityName.ROLE_PATIENT)) {
+            return patientRecordStatusResponse;
+        }
+        String patientID = user.getUserId();
+        PatientRecord patientRecord =
+                patientRecordRepository.findTop1ByPatientIdOrderByCreatedAtDesc(patientID).orElseThrow(() -> new ResourceNotFoundException("Patient Not Found"));
+        if(patientRecord == null)
+            return patientRecordStatusResponse;
+        patientRecordStatusResponse.setPatientRecordStatus(patientRecord.getStatus());
+        patientRecordStatusResponse.setCreatedAt(patientRecord.getCreatedAt());
+        patientRecordStatusResponse.setUpdatedAt(patientRecord.getUpdatedAt());
+        if(patientRecord.getStatus() == PatientRecordStatus.COUNSELOR_APPOINTMENT) {
+            CounselorAppointment appointment = counselorAppointmentRepository.findByAppointmentId(patientRecord.getAppointmentId());
+            patientRecordStatusResponse.setStartDateTime(appointment.getStartDateTime());
+            patientRecordStatusResponse.setEndDateTime(appointment.getEndDateTime());
+        }
+        if(patientRecord.getStatus() == PatientRecordStatus.DOCTOR_APPOINTMENT) {
+            DoctorAppointment appointment = doctorAppointmentRepository.findByAppointmentId(patientRecord.getAppointmentId());
+            patientRecordStatusResponse.setStartDateTime(appointment.getStartDateTime());
+            patientRecordStatusResponse.setEndDateTime(appointment.getEndDateTime());
+        }
+        return  patientRecordStatusResponse;
     }
 }

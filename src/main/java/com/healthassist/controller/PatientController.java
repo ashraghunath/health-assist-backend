@@ -6,8 +6,10 @@ import com.healthassist.request.LoginRequest;
 import com.healthassist.request.UserRequest;
 import com.healthassist.response.AssessmentResponse;
 import com.healthassist.response.LoginResponse;
+import com.healthassist.response.PatientRecordStatusResponse;
 import com.healthassist.service.AssessmentService;
 import com.healthassist.service.BaseService;
+import com.healthassist.service.PatientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +25,9 @@ public class PatientController {
 
     @Autowired
     private BaseService baseService;
+
+    @Autowired
+    private PatientService patientService;
 
     @PostMapping("/signup")
     public LoginResponse signUp(@Valid @RequestBody UserRequest request) {
@@ -44,5 +49,8 @@ public class PatientController {
         return baseService.login(request, AuthorityName.ROLE_PATIENT);
     }
 
-
+    @GetMapping("/status")
+    public PatientRecordStatusResponse getStatus() {
+        return patientService.getPatientRecordStatus();
+    }
 }

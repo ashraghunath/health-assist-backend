@@ -21,4 +21,6 @@ public interface CounselorAppointmentRepository extends MongoRepository<Counselo
 	List<AppointmentListForDateResponse> findByCounselorIdAndStartDateTimeBetweenOrderByCreatedAtDesc(String userId,
 			LocalDateTime date, LocalDateTime plusDays);
 
+	CounselorAppointment findByAppointmentId(String appointmentId);
+
 }
