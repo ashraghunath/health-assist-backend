@@ -21,6 +21,7 @@ import com.healthassist.request.AppointmentListForDateRequest;
 import com.healthassist.request.AppointmentRequest;
 import com.healthassist.request.LoginRequest;
 import com.healthassist.response.AppointmentListForDateResponse;
+import com.healthassist.response.AppointmentResponse;
 import com.healthassist.response.LoginResponse;
 import com.healthassist.service.BaseService;
 
@@ -60,16 +61,28 @@ public class CounsellorController {
 	public PatientRecordResponse getPatientRecord(@PathVariable String patientRecordId) {
 		return counselorService.getActivePatient(patientRecordId);
 	}
+
+	@PostMapping(value = "/patient/appointment")
+	public void makeCounselorAppointment(@Valid @RequestBody AppointmentRequest appointmentRequest) {
+		counselorService.storeCounselorAppointment(appointmentRequest);
+	}
+
+	@PostMapping(value = "/patient/appointments")
+	public List<AppointmentListForDateResponse> getCounselorAppointmentsByDate(
+			@Valid @RequestBody AppointmentListForDateRequest request) {
+		return counselorService.getCounselorAppointmentsByDate(request);
+	}
+
+	@GetMapping(value = "/patient/appointment")
+	public Page<AppointmentResponse> getCounselorAppointments(@RequestParam(defaultValue = "0") Integer page,
+			@RequestParam(defaultValue = "10") Integer size) {
+		Pageable paging = PageRequest.of(page, size);
+		return counselorService.getCounselorAppointments(paging);
+	}
 	
-	 @PostMapping(value = "/patient/appointment")
-	    public void makeCounselorAppointment(@Valid @RequestBody AppointmentRequest appointmentRequest) {
-	        counselorService.storeCounselorAppointment(appointmentRequest);
-	    }
-	 
-	 @PostMapping(value = "/patient/appointments")
-		public List<AppointmentListForDateResponse> getCounselorAppointmentsByDate(
-				@Valid @RequestBody AppointmentListForDateRequest request) {
-	        return counselorService.getCounselorAppointmentsByDate(request);
-	    }
+    @DeleteMapping(value = "/patient/{appointmentId}")
+    public void cancelAppointment(@PathVariable String appointmentId) {
+        counselorService.cancelAppointment(appointmentId);
+    }
 
 }

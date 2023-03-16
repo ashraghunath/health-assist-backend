@@ -1,9 +1,13 @@
 package com.healthassist.service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.List;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import com.healthassist.common.PatientRecordStatus;
 import com.healthassist.common.UserCommonService;
@@ -14,6 +18,7 @@ import com.healthassist.exception.AlreadyExistsException;
 import com.healthassist.exception.InvalidAppointmentRequestException;
 import com.healthassist.exception.ResourceNotFoundException;
 import com.healthassist.response.AppointmentListForDateResponse;
+import com.healthassist.response.AppointmentResponse;
 import com.healthassist.request.AppointmentListForDateRequest;
 import com.healthassist.response.PatientRecordResponse;
 import com.healthassist.mapper.AppointmentMapper;
@@ -52,7 +57,7 @@ public class CounselorService {
 
 	public PatientRecordResponse getActivePatient(String patientRecordId) {
 		PatientRecord patientRecord = patientRecordRepository.findByPatientRecordId(patientRecordId)
-				.orElseThrow(() -> new ResourceNotFoundException("Patient not found"));
+				.orElseThrow(() -> new ResourceNotFoundException("Patient not found in Active Patient Records"));
 		PatientRecordResponse response = new PatientRecordResponse();
 		response.setPatient(
 				userMapper.toUserResponse(userRepository.findByUserIdAndDeletedFalse(patientRecord.getPatientId())));
@@ -118,6 +123,30 @@ public class CounselorService {
 
 		return counselorAppointmentRepository.findByCounselorIdAndStartDateTimeBetweenOrderByCreatedAtDesc(
 				user.getUserId(), requestDate.getDate(), requestDate.getDate().plusDays(1));
+	}
+	
+	public Page<AppointmentResponse> getCounselorAppointments(Pageable pageable) {
+		User user = userCommonService.getUser();
+
+		Page<CounselorAppointment> pages = counselorAppointmentRepository
+				.findByCounselorIdAndStartDateTimeGreaterThanEqualOrderByCreatedAtDesc(user.getUserId(),
+							LocalDateTime.now(ZoneOffset.UTC), pageable);
+
+		return pages.map(appointmentMapper::toAppointmentResponse);
+	}
+
+	public void cancelAppointment(String appointmentId) {
+		String patientRecordId = counselorAppointmentRepository.findByAppointmentId(appointmentId).getPatientRecordId();
+		PatientRecord patientRecord = patientRecordRepository
+				.findByPatientRecordId(patientRecordId).orElseThrow(()->new ResourceNotFoundException("Patient Record Does not exist"));
+		if (patientRecord.getStatus() == PatientRecordStatus.COUNSELOR_APPOINTMENT
+				&& patientRecord.getAppointmentId() != null) {
+			counselorAppointmentRepository.deleteByAppointmentId(patientRecord.getAppointmentId());
+		}		
+		patientRecord.update();
+		patientRecord.setAppointmentId(null);
+		patientRecord.setStatus(PatientRecordStatus.COUNSELOR_IN_PROGRESS);
+		patientRecordRepository.save(patientRecord);
 	}
 
 }

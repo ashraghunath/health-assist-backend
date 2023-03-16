@@ -10,5 +10,7 @@ import lombok.Setter;
 
 @Document("counselor_appointments")
 public class CounselorAppointment extends Appointment {
+	
 	private String counselorId;
+	
 }
