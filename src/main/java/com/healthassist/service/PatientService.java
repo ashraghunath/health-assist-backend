@@ -8,12 +8,11 @@ import com.healthassist.mapper.ActivePatientMapper;
 import com.healthassist.repository.*;
 import com.healthassist.response.AssessmentResultResponse;
 import com.healthassist.response.PatientRecordCardResponse;
+import com.healthassist.response.PatientRecordStatusResponse;
 import com.healthassist.response.AttemptedQuestionResponse;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.healthassist.response.PatientRecordStatusResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
