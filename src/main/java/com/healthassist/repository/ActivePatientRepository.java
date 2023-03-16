@@ -11,4 +11,6 @@ public interface ActivePatientRepository extends MongoRepository<ActivePatient, 
     boolean existsByPatientId(String patientId);
     Page<ActivePatient> findAll(Pageable pageable);
 
+    ActivePatient findByActivePatientId(String activePatientId);
+
 }

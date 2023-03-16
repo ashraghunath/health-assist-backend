@@ -1,14 +1,21 @@
 package com.healthassist.mapper;
 
 import com.healthassist.entity.User;
+import com.healthassist.repository.AssignedPatientRepository;
 import com.healthassist.request.UserRequest;
+import com.healthassist.response.CounselorDoctorCardResponse;
 import com.healthassist.response.UserCardResponse;
 import com.healthassist.response.UserResponse;
 import com.healthassist.util.TimeUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UserMapper {
+
+    @Autowired
+    AssignedPatientRepository assignedPatientRepository;
+
     public User fromPatientRequest(UserRequest userRequest) {
         User user = new User();
         user.setFullName(userRequest.getFullName());
@@ -43,5 +50,16 @@ public class UserMapper {
         userCardResponse.setPhoneNumber(user.getPhoneNumber());
         userCardResponse.setFullName(user.getFullName());
         return userCardResponse;
+    }
+
+    public CounselorDoctorCardResponse toCounselorDoctorCardResponse(User user) {
+        CounselorDoctorCardResponse response = new CounselorDoctorCardResponse();
+        response.setFullName(user.getFullName());
+        response.setEmailAddress(user.getEmailAddress());
+        response.setPhoneNumber(user.getPhoneNumber());
+        response.setRegistrationNumber(user.getRegistrationNumber());
+        if (user.getRegistrationNumber() != null)
+            response.setCurrentPatients(assignedPatientRepository.countByDoctorRegistrationNumber(response.getRegistrationNumber()));
+        return response;
     }
 }

@@ -5,6 +5,12 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.List;
 import javax.validation.Valid;
+
+import com.healthassist.common.AuthorityName;
+import com.healthassist.entity.AssignedPatient;
+import com.healthassist.repository.AssignedPatientRepository;
+import com.healthassist.request.DoctorAssignmentRequest;
+import com.healthassist.response.CounselorDoctorCardResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -54,6 +60,9 @@ public class CounselorService {
 
 	@Autowired
 	AppointmentMapper appointmentMapper;
+
+	@Autowired
+	AssignedPatientRepository assignedPatientRepository;
 
 	public PatientRecordResponse getActivePatient(String patientRecordId) {
 		PatientRecord patientRecord = patientRecordRepository.findByPatientRecordId(patientRecordId)
@@ -147,6 +156,49 @@ public class CounselorService {
 		patientRecord.setAppointmentId(null);
 		patientRecord.setStatus(PatientRecordStatus.COUNSELOR_IN_PROGRESS);
 		patientRecordRepository.save(patientRecord);
+	}
+
+	public Page<CounselorDoctorCardResponse> getDoctorPage(Pageable pageable) {
+		Page<User> page = userRepository.findByAuthorityContainsAndDeletedFalseOrderByCreatedAtDesc(AuthorityName.ROLE_DOCTOR, pageable);
+
+		return page.map(userMapper::toCounselorDoctorCardResponse);
+	}
+
+	public void assignDoctorToPatient(DoctorAssignmentRequest doctorAssignmentRequest) {
+		String counselorRegistrationNumber = userCommonService.getUser().getRegistrationNumber();
+		if (!patientRecordRepository.existsByPatientRecordId(doctorAssignmentRequest.getActivePatientId())) {
+			throw new ResourceNotFoundException(String.format("patient record %s not found", doctorAssignmentRequest.getActivePatientId()));
+		}
+		if (!userRepository.existsByRegistrationNumberAndDeletedFalse(doctorAssignmentRequest.getDoctorRegistrationNumber())) {
+			throw new ResourceNotFoundException(String.format("doctor with %s not found", doctorAssignmentRequest.getDoctorRegistrationNumber()));
+		}
+		// check if the patient record has already been assigned to a doctor
+		if (assignedPatientRepository.existsByPatientRecordId(doctorAssignmentRequest.getActivePatientId())) {
+			throw new AlreadyExistsException(String.format("patient record %s is already assigned to a doctor", doctorAssignmentRequest.getActivePatientId()));
+		}
+
+		PatientRecord patientRecord = patientRecordRepository.findByPatientRecordId(doctorAssignmentRequest.getActivePatientId()).orElseThrow(() -> new ResourceNotFoundException("Patient not found"));;
+		if (patientRecord.getStatus() != PatientRecordStatus.COUNSELOR_IN_PROGRESS &&
+				patientRecord.getStatus() != PatientRecordStatus.COUNSELOR_APPOINTMENT) {
+			throw new ResourceNotFoundException(String.format("patient record %s not found", doctorAssignmentRequest.getActivePatientId()));
+		}
+
+		// before forwarding to a doctor, delete any existing appointment with the counselor.
+		if (patientRecord.getStatus() == PatientRecordStatus.COUNSELOR_APPOINTMENT &&
+				patientRecord.getAppointmentId() != null) {
+			counselorAppointmentRepository.deleteByAppointmentId(patientRecord.getAppointmentId());
+		}
+
+		// save assigned patient record
+		AssignedPatient assignedPatient = new AssignedPatient();
+		assignedPatient.setPatientRecordId(patientRecord.getPatientRecordId());
+		assignedPatient.setDoctorRegistrationNumber(doctorAssignmentRequest.getDoctorRegistrationNumber());
+		assignedPatient.setCounselorRegistrationNumber(counselorRegistrationNumber);
+		assignedPatient.setPatientId(patientRecord.getPatientId());
+		assignedPatient = assignedPatientRepository.save(assignedPatient);
+
+		// update patient record after assigning a doctor to active patient record
+		patientRecordService.afterAssigningDoctor(assignedPatient, patientRecord);
 	}
 
 }
