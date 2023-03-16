@@ -4,7 +4,6 @@ import com.healthassist.common.AuthorityName;
 import com.healthassist.common.PatientRecordStatus;
 import com.healthassist.common.UserCommonService;
 import com.healthassist.entity.*;
-import com.healthassist.exception.ResourceNotFoundException;
 import com.healthassist.mapper.ActivePatientMapper;
 import com.healthassist.repository.*;
 import com.healthassist.response.AssessmentResultResponse;
@@ -72,7 +71,7 @@ public class PatientService {
         }
         String patientID = user.getUserId();
         PatientRecord patientRecord =
-                patientRecordRepository.findTop1ByPatientIdOrderByCreatedAtDesc(patientID).orElseThrow(() -> new ResourceNotFoundException("Patient Not Found"));
+                patientRecordRepository.findTop1ByPatientIdOrderByCreatedAtDesc(patientID);
         if(patientRecord == null)
             return patientRecordStatusResponse;
         patientRecordStatusResponse.setPatientRecordStatus(patientRecord.getStatus());
