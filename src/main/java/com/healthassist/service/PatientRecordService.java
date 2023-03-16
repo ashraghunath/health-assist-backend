@@ -1,10 +1,7 @@
 package com.healthassist.service;
 
 import com.healthassist.common.PatientRecordStatus;
-import com.healthassist.entity.ActivePatient;
-import com.healthassist.entity.AssessmentResult;
-import com.healthassist.entity.CounselorAppointment;
-import com.healthassist.entity.PatientRecord;
+import com.healthassist.entity.*;
 import com.healthassist.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -57,4 +54,17 @@ public class PatientRecordService {
 		return null;
 		
 	}
+
+    public PatientRecord afterAssigningDoctor(AssignedPatient assignedPatient, PatientRecord patientRecord) {
+        ActivePatient activePatient = activePatientRepository.findByActivePatientId(patientRecord.getActivePatientId());
+
+        // delete active patient
+        activePatientRepository.delete(activePatient);
+
+        // update patient record
+        patientRecord.update();
+        patientRecord.setAssignedPatientId(assignedPatient.getAssignedPatientId());
+        patientRecord.setStatus(PatientRecordStatus.DOCTOR_IN_PROGRESS);
+        return patientRecordRepository.save(patientRecord);
+    }
 }

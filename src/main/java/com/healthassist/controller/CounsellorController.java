@@ -4,11 +4,10 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import com.healthassist.request.UserRequest;
-import com.healthassist.response.PatientRecordCardResponse;
+import com.healthassist.request.*;
+import com.healthassist.response.*;
 import com.healthassist.service.PatientService;
 import com.healthassist.service.CounselorService;
-import com.healthassist.response.PatientRecordResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -84,5 +83,17 @@ public class CounsellorController {
     public void cancelAppointment(@PathVariable String appointmentId) {
         counselorService.cancelAppointment(appointmentId);
     }
+
+	@GetMapping(value = "/doctor")
+	public Page<CounselorDoctorCardResponse> getDoctorPage(@RequestParam(defaultValue = "0") Integer page,
+														   @RequestParam(defaultValue = "10") Integer size) {
+		Pageable paging = PageRequest.of(page, size);
+		return counselorService.getDoctorPage(paging);
+	}
+
+	@PostMapping(value = "/doctor")
+	public void assignDoctorToPatient(@Valid @RequestBody DoctorAssignmentRequest doctorAssignmentRequest) {
+		counselorService.assignDoctorToPatient(doctorAssignmentRequest);
+	}
 
 }
