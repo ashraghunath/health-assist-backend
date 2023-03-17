@@ -63,7 +63,7 @@ public class JwTService {
         System.out.println();
         return Jwts.builder().setClaims(extractClaims).setSubject(user.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 60 * 1000 * 24))
+                .setExpiration(new Date(System.currentTimeMillis() + 360 * 1000 * 24))
                 .signWith(SignatureAlgorithm.HS512, secret.getBytes(Charset.forName("UTF-8"))).compact();
     }
 

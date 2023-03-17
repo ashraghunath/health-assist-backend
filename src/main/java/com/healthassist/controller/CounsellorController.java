@@ -95,5 +95,10 @@ public class CounsellorController {
 	public void assignDoctorToPatient(@Valid @RequestBody DoctorAssignmentRequest doctorAssignmentRequest) {
 		counselorService.assignDoctorToPatient(doctorAssignmentRequest);
 	}
+	
+	@PutMapping(value = "/patient/appointment")
+	public void editAppointment(@Valid @RequestBody AppointmentRequest appointmentRequest) {
+		counselorService.editAppointment(appointmentRequest);
+	}
 
 }

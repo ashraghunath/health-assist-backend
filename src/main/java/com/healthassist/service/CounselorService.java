@@ -201,4 +201,35 @@ public class CounselorService {
 		patientRecordService.afterAssigningDoctor(assignedPatient, patientRecord);
 	}
 
+	public void editAppointment(@Valid AppointmentRequest appointmentRequest) {
+		
+		String counselorId = userCommonService.getUser().getUserId();
+		if (!patientRecordRepository.existsByPatientRecordId(appointmentRequest.getPatientRecordId())) {
+			throw new ResourceNotFoundException(
+					String.format("patient record %s not found", appointmentRequest.getPatientRecordId()));
+		}
+		
+		if (counselorAppointmentRepository.existsByCounselorIdAndStartDateTimeBetweenOrStartDateTimeEquals(counselorId,
+				appointmentRequest.getStartDateTime(), appointmentRequest.getEndDateTime(),
+				appointmentRequest.getStartDateTime())
+				|| counselorAppointmentRepository.existsByCounselorIdAndEndDateTimeBetweenOrEndDateTimeEquals(
+						counselorId, appointmentRequest.getStartDateTime(), appointmentRequest.getEndDateTime(),
+						appointmentRequest.getEndDateTime())) {
+			throw new AlreadyExistsException("There is a Conflict!! Already Reserved TimeSlot.");
+		}
+		
+		PatientRecord patientRecord = patientRecordRepository
+				.findByPatientRecordId(appointmentRequest.getPatientRecordId())
+				.orElseThrow(() -> new ResourceNotFoundException("Patient not found"));
+		CounselorAppointment existingAppointment = counselorAppointmentRepository.findByAppointmentId(patientRecord.getAppointmentId());
+		if(existingAppointment== null) {
+			throw new InvalidAppointmentRequestException("No Appoint exists for this patient. Create one first!!");
+		}
+		existingAppointment.update();
+		existingAppointment.setStartDateTime(appointmentRequest.getStartDateTime());
+		existingAppointment.setEndDateTime(appointmentRequest.getEndDateTime());
+		counselorAppointmentRepository.save(existingAppointment);
+		
+	}
+
 }
