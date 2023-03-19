@@ -40,14 +40,14 @@ public class PatientRecordService {
         return patientRecordRepository.save(patientRecord);
     }
 
-	public PatientRecord afterAppointment(CounselorAppointment counselorAppointment, PatientRecord patientRecord,
+	public PatientRecord afterAppointment(Appointment appointment, PatientRecord patientRecord,
 			PatientRecordStatus status) {
 		// TODO Auto-generated method stub
 		
 		if (status == PatientRecordStatus.COUNSELOR_APPOINTMENT || status == PatientRecordStatus.DOCTOR_APPOINTMENT) {
             // update patient record (ActivePatient)
             patientRecord.update();
-            patientRecord.setAppointmentId(counselorAppointment.getAppointmentId());
+            patientRecord.setAppointmentId(appointment.getAppointmentId());
             patientRecord.setStatus(status);
             return patientRecordRepository.save(patientRecord);
         }
@@ -65,6 +65,11 @@ public class PatientRecordService {
         patientRecord.update();
         patientRecord.setAssignedPatientId(assignedPatient.getAssignedPatientId());
         patientRecord.setStatus(PatientRecordStatus.DOCTOR_IN_PROGRESS);
+        return patientRecordRepository.save(patientRecord);
+    }
+    public PatientRecord afterRejectingPatient(PatientRecord patientRecord, PatientRecordStatus status) {
+        patientRecord.update();
+        patientRecord.setStatus(status);
         return patientRecordRepository.save(patientRecord);
     }
 }
