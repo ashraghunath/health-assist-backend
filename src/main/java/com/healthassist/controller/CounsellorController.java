@@ -95,10 +95,16 @@ public class CounsellorController {
 	public void assignDoctorToPatient(@Valid @RequestBody DoctorAssignmentRequest doctorAssignmentRequest) {
 		counselorService.assignDoctorToPatient(doctorAssignmentRequest);
 	}
-	
+
+	@PostMapping(value = "/patient/{patientRecordId}")
+	public void rejectPatient(@PathVariable String patientRecordId) {
+		counselorService.rejectPatient(patientRecordId);
+	}
+
 	@PutMapping(value = "/patient/appointment")
 	public void editAppointment(@Valid @RequestBody AppointmentRequest appointmentRequest) {
 		counselorService.editAppointment(appointmentRequest);
 	}
+
 
 }

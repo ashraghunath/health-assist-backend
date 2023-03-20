@@ -8,7 +8,7 @@ import javax.validation.Valid;
 
 import com.healthassist.common.AuthorityName;
 import com.healthassist.entity.AssignedPatient;
-import com.healthassist.repository.AssignedPatientRepository;
+import com.healthassist.repository.*;
 import com.healthassist.request.DoctorAssignmentRequest;
 import com.healthassist.response.CounselorDoctorCardResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +29,7 @@ import com.healthassist.request.AppointmentListForDateRequest;
 import com.healthassist.response.PatientRecordResponse;
 import com.healthassist.mapper.AppointmentMapper;
 import com.healthassist.mapper.UserMapper;
-import com.healthassist.repository.UserRepository;
 import com.healthassist.request.AppointmentRequest;
-import com.healthassist.repository.CounselorAppointmentRepository;
-import com.healthassist.repository.PatientRecordRepository;
 
 @Service
 public class CounselorService {
@@ -63,6 +60,9 @@ public class CounselorService {
 
 	@Autowired
 	AssignedPatientRepository assignedPatientRepository;
+
+	@Autowired
+	ActivePatientRepository activePatientRepository;
 
 	public PatientRecordResponse getActivePatient(String patientRecordId) {
 		PatientRecord patientRecord = patientRecordRepository.findByPatientRecordId(patientRecordId)
@@ -201,7 +201,22 @@ public class CounselorService {
 		patientRecordService.afterAssigningDoctor(assignedPatient, patientRecord);
 	}
 
-	public void editAppointment(@Valid AppointmentRequest appointmentRequest) {
+	public void rejectPatient(String patientRecordId) {
+		PatientRecord patientRecord = patientRecordRepository.findByPatientRecordId(patientRecordId).orElseThrow(() -> new ResourceNotFoundException("Patient record Not found"));
+		if (patientRecord != null &&(patientRecord.getStatus() == PatientRecordStatus.COUNSELOR_IN_PROGRESS || patientRecord.getStatus() == PatientRecordStatus.COUNSELOR_APPOINTMENT)) {
+			activePatientRepository.deleteByActivePatientId(patientRecord.getActivePatientId());
+
+			if (patientRecord.getAppointmentId() != null &&
+					patientRecord.getStatus() == PatientRecordStatus.COUNSELOR_APPOINTMENT) {
+				// delete counselor appointment
+				counselorAppointmentRepository.deleteByAppointmentId(patientRecord.getAppointmentId());
+			}
+			patientRecordService.afterRejectingPatient(patientRecord, PatientRecordStatus.COUNSELOR_REJECTED);
+			return;
+		}
+		throw new ResourceNotFoundException("Patient Record Not Found");
+	}
+		public void editAppointment(@Valid AppointmentRequest appointmentRequest) {
 		
 		String counselorId = userCommonService.getUser().getUserId();
 		if (!patientRecordRepository.existsByPatientRecordId(appointmentRequest.getPatientRecordId())) {
