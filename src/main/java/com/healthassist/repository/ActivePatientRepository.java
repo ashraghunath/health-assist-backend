@@ -13,4 +13,5 @@ public interface ActivePatientRepository extends MongoRepository<ActivePatient, 
 
     ActivePatient findByActivePatientId(String activePatientId);
 
+    void deleteByActivePatientId(String activePatientId);
 }
