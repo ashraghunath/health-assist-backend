@@ -69,6 +69,6 @@ public class DoctorController {
 
     @RequestMapping(value = "/patient/{patientRecordId}", method = RequestMethod.DELETE)
     public void rejectPatient(@PathVariable String patientRecordId) {
-        doctorService.rejectPatient(patientRecordId);
+        doctorService.rejectAssignedPatient(patientRecordId);
     }
 }

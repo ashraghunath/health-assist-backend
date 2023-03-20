@@ -131,7 +131,7 @@ public class DoctorService {
         patientRecordService.afterAppointment(doctorAppointment, patientRecord, PatientRecordStatus.DOCTOR_APPOINTMENT);
     }
 
-    public void rejectPatient(String patientRecordId) {
+    public void rejectAssignedPatient(String patientRecordId) {
         PatientRecord patientRecord = patientRecordRepository.findByPatientRecordId(patientRecordId).orElseThrow(() -> new ResourceNotFoundException("Patient record Not found"));
         if (patientRecord != null &&
                 (patientRecord.getStatus() == PatientRecordStatus.DOCTOR_IN_PROGRESS || patientRecord.getStatus() == PatientRecordStatus.DOCTOR_APPOINTMENT)) {
