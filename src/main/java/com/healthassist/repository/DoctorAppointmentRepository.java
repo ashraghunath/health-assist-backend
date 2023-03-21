@@ -15,7 +15,7 @@ public interface DoctorAppointmentRepository extends MongoRepository<DoctorAppoi
     Page<DoctorAppointment> findByDoctorIdAndStartDateTimeGreaterThanEqualOrderByCreatedAtDesc(String doctorId, LocalDateTime date, Pageable pageable);
 
     List<AppointmentListForDateResponse> findByDoctorIdAndStartDateTimeBetweenOrderByCreatedAtDesc(String counselorId, LocalDateTime startDate, LocalDateTime endDate);
-
+    List<DoctorAppointment>findDoctorAppointmentByPatientRecordIdAndDoctorIdOrderByCreatedAtDesc(String patientRecordId,String doctorId);
     boolean existsByDoctorIdAndStartDateTimeBetweenOrStartDateTimeEquals(
             String doctorId, LocalDateTime startDateTime, LocalDateTime endDateTime, LocalDateTime startDateTimeE);
 

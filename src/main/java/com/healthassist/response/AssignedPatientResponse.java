@@ -20,6 +20,6 @@ public class AssignedPatientResponse {
     private LocalDateTime assignedAt;
 
     private LocalDateTime assessmentCreatedAt;
-
+    private String appointmentId;
 
 }
