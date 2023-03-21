@@ -69,7 +69,7 @@ public class DoctorController {
 
     @RequestMapping(value = "/patient/{patientRecordId}", method = RequestMethod.DELETE)
     public void rejectPatient(@PathVariable String patientRecordId) {
-        doctorService.rejectPatient(patientRecordId);
+        doctorService.rejectAssignedPatient(patientRecordId);
     }
     @RequestMapping(value = "/appointment/{appointmentId}", method = RequestMethod.DELETE)
     public void deleteAppointment(@PathVariable String appointmentId) {
