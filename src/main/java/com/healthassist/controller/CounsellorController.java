@@ -79,7 +79,7 @@ public class CounsellorController {
 		return counselorService.getCounselorAppointments(paging);
 	}
 	
-    @DeleteMapping(value = "/patient/{appointmentId}")
+    @DeleteMapping(value = "/appointment/{appointmentId}")
     public void cancelAppointment(@PathVariable String appointmentId) {
         counselorService.cancelAppointment(appointmentId);
     }
@@ -96,7 +96,7 @@ public class CounsellorController {
 		counselorService.assignDoctorToPatient(doctorAssignmentRequest);
 	}
 
-	@PostMapping(value = "/patient/{patientRecordId}")
+	@DeleteMapping(value = "/patient/{patientRecordId}")
 	public void rejectPatient(@PathVariable String patientRecordId) {
 		counselorService.rejectPatient(patientRecordId);
 	}

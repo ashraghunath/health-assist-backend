@@ -38,40 +38,40 @@ public class DoctorController {
         return baseService.signUp(request, AuthorityName.ROLE_DOCTOR);
     }
 
-    @RequestMapping(value = "/patient", method = RequestMethod.GET)
+    @GetMapping(value = "/patient")
     public Page<AssignedPatientResponse> getAssignedPatients(@RequestParam(defaultValue = "0") Integer page,
                                                              @RequestParam(defaultValue = "10") Integer size) {
         Pageable paging = PageRequest.of(page, size);
         return doctorService.getAssignedPatients(paging);
     }
 
-    @RequestMapping(value = "/patient/{patientRecordId}", method = RequestMethod.GET)
+    @GetMapping(value = "/patient/{patientRecordId}")
     public PatientRecordResponse getPatientRecord(@PathVariable String patientRecordId) {
         return doctorService.getActivePatient(patientRecordId);
     }
 
-    @RequestMapping(value = "/patient/appointment", method = RequestMethod.GET)
+    @GetMapping(value = "/patient/appointment")
     public Page<AppointmentResponse> getDoctorAppointments(@RequestParam(defaultValue = "0") Integer page,
                                                            @RequestParam(defaultValue = "10") Integer size) {
         Pageable paging = PageRequest.of(page, size);
         return doctorService.getDoctorAppointments(paging);
     }
 
-    @RequestMapping(value = "/patient/appointments", method = RequestMethod.POST)
+    @PostMapping(value = "/patient/appointments")
     public List<AppointmentListForDateResponse> getDoctorAppointmentsByDate(@Valid @RequestBody AppointmentListForDateRequest request) {
         return doctorService.getDoctorAppointmentsByDate(request);
     }
 
-    @RequestMapping(value = "/patient/appointment", method = RequestMethod.POST)
+    @PostMapping(value = "/patient/appointment")
     public void makeDoctorAppointment(@Valid @RequestBody AppointmentRequest appointmentRequest) {
         doctorService.storeDoctorAppointment(appointmentRequest);
     }
 
-    @RequestMapping(value = "/patient/{patientRecordId}", method = RequestMethod.DELETE)
+    @DeleteMapping(value = "/patient/{patientRecordId}")
     public void rejectPatient(@PathVariable String patientRecordId) {
         doctorService.rejectPatient(patientRecordId);
     }
-    @RequestMapping(value = "/appointment/{appointmentId}", method = RequestMethod.DELETE)
+    @DeleteMapping(value = "/appointment/{appointmentId}")
     public void deleteAppointment(@PathVariable String appointmentId) {
         doctorService.deleteAppointment(appointmentId);
     }
