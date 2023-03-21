@@ -149,6 +149,11 @@ public class DoctorService {
         throw new ResourceNotFoundException("patient record not found");
     }
     public void deleteAppointment(String appointmentId){
+        DoctorAppointment appointmentDetails=appointmentRepository.findByAppointmentId(appointmentId);
         appointmentRepository.deleteByAppointmentId(appointmentId);
+        PatientRecord record=patientRecordRepository.findByPatientRecordId(appointmentDetails.getPatientRecordId()).orElseThrow(()->new ResourceNotFoundException("Patient record not found"));
+        patientRecordRepository.deletePatientRecordByPatientRecordId(appointmentDetails.getPatientRecordId());
+        record.setStatus(PatientRecordStatus.DOCTOR_IN_PROGRESS);
+        patientRecordRepository.save(record);
     }
 }
