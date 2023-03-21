@@ -54,12 +54,14 @@ public class CounsellorController {
 
     @PostMapping(value = "/patient/appointment")
     public void makeCounselorAppointment(@Valid @RequestBody AppointmentRequest appointmentRequest) {
+    	System.out.println("making the appointment");
         counselorService.storeCounselorAppointment(appointmentRequest);
     }
 
     @PostMapping(value = "/patient/appointments")
     public List<AppointmentListForDateResponse> getCounselorAppointmentsByDate(
             @Valid @RequestBody AppointmentListForDateRequest request) {
+    	System.out.println("making the appointmentss");
         return counselorService.getCounselorAppointmentsByDate(request);
     }
 
