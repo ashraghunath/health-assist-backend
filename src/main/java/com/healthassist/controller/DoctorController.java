@@ -22,57 +22,64 @@ import java.util.List;
 @RequestMapping(value = "/api/v1/doctor")
 
 public class DoctorController {
-    @Autowired
-    private DoctorService doctorService;
+	@Autowired
+	private DoctorService doctorService;
 
-    @Autowired
-    private BaseService baseService;
+	@Autowired
+	private BaseService baseService;
 
-    @PostMapping("/login")
-    public LoginResponse login(@Valid @RequestBody LoginRequest request) {
-        return baseService.login(request, AuthorityName.ROLE_DOCTOR);
-    }
+	@PostMapping("/login")
+	public LoginResponse login(@Valid @RequestBody LoginRequest request) {
+		return baseService.login(request, AuthorityName.ROLE_DOCTOR);
+	}
 
-    @PostMapping("/signup")
-    public LoginResponse signUp(@Valid @RequestBody UserRequest request) {
-        return baseService.signUp(request, AuthorityName.ROLE_DOCTOR);
-    }
+	@PostMapping("/signup")
+	public LoginResponse signUp(@Valid @RequestBody UserRequest request) {
+		return baseService.signUp(request, AuthorityName.ROLE_DOCTOR);
+	}
 
-    @GetMapping(value = "/patient")
-    public Page<AssignedPatientResponse> getAssignedPatients(@RequestParam(defaultValue = "0") Integer page,
-                                                             @RequestParam(defaultValue = "10") Integer size) {
-        Pageable paging = PageRequest.of(page, size);
-        return doctorService.getAssignedPatients(paging);
-    }
+	@GetMapping(value = "/patient")
+	public Page<AssignedPatientResponse> getAssignedPatients(@RequestParam(defaultValue = "0") Integer page,
+			@RequestParam(defaultValue = "10") Integer size) {
+		Pageable paging = PageRequest.of(page, size);
+		return doctorService.getAssignedPatients(paging);
+	}
 
-    @GetMapping(value = "/patient/{patientRecordId}")
-    public PatientRecordResponse getPatientRecord(@PathVariable String patientRecordId) {
-        return doctorService.getActivePatient(patientRecordId);
-    }
+	@GetMapping(value = "/patient/{patientRecordId}")
+	public PatientRecordResponse getPatientRecord(@PathVariable String patientRecordId) {
+		return doctorService.getActivePatient(patientRecordId);
+	}
 
-    @GetMapping(value = "/patient/appointment")
-    public Page<AppointmentResponse> getDoctorAppointments(@RequestParam(defaultValue = "0") Integer page,
-                                                           @RequestParam(defaultValue = "10") Integer size) {
-        Pageable paging = PageRequest.of(page, size);
-        return doctorService.getDoctorAppointments(paging);
-    }
+	@GetMapping(value = "/patient/appointment")
+	public Page<AppointmentResponse> getDoctorAppointments(@RequestParam(defaultValue = "0") Integer page,
+			@RequestParam(defaultValue = "10") Integer size) {
+		Pageable paging = PageRequest.of(page, size);
+		return doctorService.getDoctorAppointments(paging);
+	}
 
-    @PostMapping(value = "/patient/appointments")
-    public List<AppointmentListForDateResponse> getDoctorAppointmentsByDate(@Valid @RequestBody AppointmentListForDateRequest request) {
-        return doctorService.getDoctorAppointmentsByDate(request);
-    }
+	@PostMapping(value = "/patient/appointments")
+	public List<AppointmentListForDateResponse> getDoctorAppointmentsByDate(
+			@Valid @RequestBody AppointmentListForDateRequest request) {
+		return doctorService.getDoctorAppointmentsByDate(request);
+	}
 
-    @PostMapping(value = "/patient/appointment")
-    public void makeDoctorAppointment(@Valid @RequestBody AppointmentRequest appointmentRequest) {
-        doctorService.storeDoctorAppointment(appointmentRequest);
-    }
+	@PostMapping(value = "/patient/appointment")
+	public void makeDoctorAppointment(@Valid @RequestBody AppointmentRequest appointmentRequest) {
+		doctorService.storeDoctorAppointment(appointmentRequest);
+	}
 
-    @DeleteMapping(value = "/patient/{patientRecordId}")
-    public void rejectPatient(@PathVariable String patientRecordId) {
-        doctorService.rejectAssignedPatient(patientRecordId);
-    }
-    @DeleteMapping(value = "/appointment/{appointmentId}")
-    public void deleteAppointment(@PathVariable String appointmentId) {
-        doctorService.deleteAppointment(appointmentId);
-    }
+	@DeleteMapping(value = "/patient/{patientRecordId}")
+	public void rejectPatient(@PathVariable String patientRecordId) {
+		doctorService.rejectAssignedPatient(patientRecordId);
+	}
+
+	@DeleteMapping(value = "/appointment/{appointmentId}")
+	public void deleteAppointment(@PathVariable String appointmentId) {
+		doctorService.deleteAppointment(appointmentId);
+	}
+
+	@PutMapping(value = "/patient/appointment")
+	public void editAppointment(@Valid @RequestBody AppointmentRequest appointmentRequest) {
+		doctorService.editAppointment(appointmentRequest);
+	}
 }
