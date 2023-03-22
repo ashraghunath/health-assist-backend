@@ -3,10 +3,12 @@ package com.healthassist.service;
 import com.healthassist.common.PatientRecordStatus;
 import com.healthassist.common.UserCommonService;
 import com.healthassist.entity.AssignedPatient;
+import com.healthassist.entity.CounselorAppointment;
 import com.healthassist.entity.DoctorAppointment;
 import com.healthassist.entity.PatientRecord;
 import com.healthassist.entity.User;
 import com.healthassist.exception.AlreadyExistsException;
+import com.healthassist.exception.InvalidAppointmentRequestException;
 import com.healthassist.exception.InvalidUserRequestException;
 import com.healthassist.exception.ResourceNotFoundException;
 import com.healthassist.mapper.AppointmentMapper;
@@ -30,130 +32,172 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.validation.Valid;
+
 @Component
 public class DoctorService {
-    @Autowired
-    UserCommonService userCommonService;
-    @Autowired
-    AssignedPatientMapper assignedPatientMapper;
-    @Autowired
-    AssignedPatientRepository assignedPatientRepository;
-    @Autowired
-    PatientRecordRepository patientRecordRepository;
-    @Autowired
-    UserRepository userRepository;
+	@Autowired
+	UserCommonService userCommonService;
+	@Autowired
+	AssignedPatientMapper assignedPatientMapper;
+	@Autowired
+	AssignedPatientRepository assignedPatientRepository;
+	@Autowired
+	PatientRecordRepository patientRecordRepository;
+	@Autowired
+	UserRepository userRepository;
+	@Autowired
+	DoctorAppointmentRepository appointmentRepository;
+	@Autowired
+	AppointmentMapper appointmentMapper;
+	@Autowired
+	UserMapper userMapper;
+	@Autowired
+	PatientService patientService;
+	@Autowired
+	PatientRecordService patientRecordService;
 
-    @Autowired
-    DoctorAppointmentRepository appointmentRepository;
+	public Page<AssignedPatientResponse> getAssignedPatients(Pageable pageable) {
+		String userRegisterNumber = userCommonService.getUser().getRegistrationNumber();
 
-    @Autowired
-    AppointmentMapper appointmentMapper;
+		Page<AssignedPatient> assignedPatientPage = assignedPatientRepository
+				.findByDoctorRegistrationNumberOrderByCreatedAtDesc(userRegisterNumber, pageable);
 
-    @Autowired
-    UserMapper userMapper;
-    @Autowired
-    PatientService patientService;
-    @Autowired
-    PatientRecordService patientRecordService;
+		return assignedPatientPage.map(assignedPatientMapper::toAssignedPatientResponse);
+	}
 
-    public Page<AssignedPatientResponse> getAssignedPatients(Pageable pageable) {
-        String userRegisterNumber = userCommonService.getUser().getRegistrationNumber();
+	public PatientRecordResponse getActivePatient(String patientRecordId) {
+		PatientRecord patientRecord = patientRecordRepository.findByPatientRecordId(patientRecordId)
+				.orElseThrow(() -> new ResourceNotFoundException("Patient not found"));
+		PatientRecordResponse response = new PatientRecordResponse();
+		response.setPatient(
+				userMapper.toUserResponse(userRepository.findByUserIdAndDeletedFalse(patientRecord.getPatientId())));
+		response.setRecordId(patientRecordId);
+		response.setCreatedAt(patientRecord.getCreatedAt());
+		response.setAssessmentResult(patientService.getAssessmentResult(patientRecord.getAssessmentResultId()));
+		return response;
+	}
 
-        Page<AssignedPatient> assignedPatientPage = assignedPatientRepository.findByDoctorRegistrationNumberOrderByCreatedAtDesc(userRegisterNumber, pageable);
+	public Page<AppointmentResponse> getDoctorAppointments(Pageable pageable) {
+		User user = userCommonService.getUser();
 
-        return assignedPatientPage.map(assignedPatientMapper::toAssignedPatientResponse);
-    }
+		Page<DoctorAppointment> pages = appointmentRepository
+				.findByDoctorIdAndStartDateTimeGreaterThanEqualOrderByCreatedAtDesc(user.getUserId(),
+						LocalDateTime.now(), pageable);
 
-    public PatientRecordResponse getActivePatient(String patientRecordId) {
-        PatientRecord patientRecord = patientRecordRepository.findByPatientRecordId(patientRecordId)
-                .orElseThrow(() -> new ResourceNotFoundException("Patient not found"));
-        PatientRecordResponse response = new PatientRecordResponse();
-        response.setPatient(
-                userMapper.toUserResponse(userRepository.findByUserIdAndDeletedFalse(patientRecord.getPatientId())));
-        response.setRecordId(patientRecordId);
-        response.setCreatedAt(patientRecord.getCreatedAt());
-        response.setAssessmentResult(patientService.getAssessmentResult(patientRecord.getAssessmentResultId()));
-        return response;
-    }
+		return pages.map(appointmentMapper::toAppointmentResponse);
+	}
 
-    public Page<AppointmentResponse> getDoctorAppointments(Pageable pageable) {
-        User user = userCommonService.getUser();
+	public List<AppointmentListForDateResponse> getDoctorAppointmentsByDate(AppointmentListForDateRequest request) {
+		if (request.getDate() == null) {
+			throw new InvalidUserRequestException("date cannot be null");
+		}
+		User user = userCommonService.getUser();
 
-        Page<DoctorAppointment> pages = appointmentRepository.findByDoctorIdAndStartDateTimeGreaterThanEqualOrderByCreatedAtDesc(user.getUserId(), LocalDateTime.now(), pageable);
+		return appointmentRepository.findByDoctorIdAndStartDateTimeBetweenOrderByCreatedAtDesc(user.getUserId(),
+				request.getDate(), request.getDate().plusDays(1));
+	}
 
-        return pages.map(appointmentMapper::toAppointmentResponse);
-    }
+	public void storeDoctorAppointment(AppointmentRequest appointmentRequest) {
+		String doctorId = userCommonService.getUser().getUserId();
+		LocalDateTime nowZonedDateTime = LocalDateTime.now();
+		if (appointmentRequest.getStartDateTime().isBefore(nowZonedDateTime)
+				|| appointmentRequest.getStartDateTime().isEqual(nowZonedDateTime)
+				|| appointmentRequest.getStartDateTime().isAfter(appointmentRequest.getEndDateTime())
+				|| appointmentRequest.getStartDateTime().isEqual(appointmentRequest.getEndDateTime())) {
+			throw new InvalidUserRequestException("appointment time period invalid");
+		}
+		if (!patientRecordRepository.existsByPatientRecordId(appointmentRequest.getPatientRecordId())) {
+			throw new ResourceNotFoundException(
+					String.format("patient record %s not found", appointmentRequest.getPatientRecordId()));
+		}
+		if (appointmentRepository.existsByPatientRecordId(appointmentRequest.getPatientRecordId())) {
+			throw new AlreadyExistsException("patient already has reserved timeslot");
+		}
+		if (appointmentRepository.existsByDoctorIdAndStartDateTimeBetweenOrStartDateTimeEquals(doctorId,
+				appointmentRequest.getStartDateTime(), appointmentRequest.getEndDateTime(),
+				appointmentRequest.getStartDateTime())
+				|| appointmentRepository.existsByDoctorIdAndEndDateTimeBetweenOrEndDateTimeEquals(doctorId,
+						appointmentRequest.getStartDateTime(), appointmentRequest.getEndDateTime(),
+						appointmentRequest.getEndDateTime())) {
+			throw new AlreadyExistsException(
+					"conflict: doctor has the reserved time slot during the provided time period");
+		}
+		PatientRecord patientRecord = patientRecordRepository
+				.findByPatientRecordId(appointmentRequest.getPatientRecordId())
+				.orElseThrow(() -> new ResourceNotFoundException("Patient Record Not Found"));
+		;
+		if (patientRecord.getStatus() != PatientRecordStatus.DOCTOR_IN_PROGRESS) {
+			throw new ResourceNotFoundException(
+					String.format("patient record %s not found", appointmentRequest.getPatientRecordId()));
+		}
+		// save doctor appointment
+		DoctorAppointment doctorAppointment = appointmentMapper
+				.fromAppointmentRequestToDoctorAppointment(appointmentRequest);
+		doctorAppointment = appointmentRepository.save(doctorAppointment);
 
-    public List<AppointmentListForDateResponse> getDoctorAppointmentsByDate(AppointmentListForDateRequest request) {
-        if (request.getDate() == null) {
-            throw new InvalidUserRequestException("date cannot be null");
-        }
-        User user = userCommonService.getUser();
+		// update patient record
+		patientRecordService.afterAppointment(doctorAppointment, patientRecord, PatientRecordStatus.DOCTOR_APPOINTMENT);
+	}
 
-        return appointmentRepository.findByDoctorIdAndStartDateTimeBetweenOrderByCreatedAtDesc(user.getUserId(), request.getDate(), request.getDate().plusDays(1));
-    }
+	public void rejectAssignedPatient(String patientRecordId) {
+		PatientRecord patientRecord = patientRecordRepository.findByPatientRecordId(patientRecordId)
+				.orElseThrow(() -> new ResourceNotFoundException("Patient record Not found"));
+		if (patientRecord != null && (patientRecord.getStatus() == PatientRecordStatus.DOCTOR_IN_PROGRESS
+				|| patientRecord.getStatus() == PatientRecordStatus.DOCTOR_APPOINTMENT)) {
+			assignedPatientRepository.deleteById(patientRecord.getAssignedPatientId());
 
-    public void storeDoctorAppointment(AppointmentRequest appointmentRequest) {
-        String doctorId = userCommonService.getUser().getUserId();
-        LocalDateTime nowZonedDateTime = LocalDateTime.now();
-        if (appointmentRequest.getStartDateTime().isBefore(nowZonedDateTime) ||
-                appointmentRequest.getStartDateTime().isEqual(nowZonedDateTime) ||
-                appointmentRequest.getStartDateTime().isAfter(appointmentRequest.getEndDateTime()) ||
-                appointmentRequest.getStartDateTime().isEqual(appointmentRequest.getEndDateTime())) {
-            throw new InvalidUserRequestException("appointment time period invalid");
-        }
-        if (!patientRecordRepository.existsByPatientRecordId(appointmentRequest.getPatientRecordId())) {
-            throw new ResourceNotFoundException(String.format("patient record %s not found", appointmentRequest.getPatientRecordId()));
-        }
-        if (appointmentRepository.existsByPatientRecordId(appointmentRequest.getPatientRecordId())) {
-            throw new AlreadyExistsException("patient already has reserved timeslot");
-        }
-        if (appointmentRepository.existsByDoctorIdAndStartDateTimeBetweenOrStartDateTimeEquals(
-                doctorId,
-                appointmentRequest.getStartDateTime(), appointmentRequest.getEndDateTime(),
-                appointmentRequest.getStartDateTime()) ||
-                appointmentRepository.existsByDoctorIdAndEndDateTimeBetweenOrEndDateTimeEquals(
-                        doctorId,
-                        appointmentRequest.getStartDateTime(), appointmentRequest.getEndDateTime(),
-                        appointmentRequest.getEndDateTime())) {
-            throw new AlreadyExistsException("conflict: doctor has the reserved time slot during the provided time period");
-        }
-        PatientRecord patientRecord = patientRecordRepository.findByPatientRecordId(appointmentRequest.getPatientRecordId()).orElseThrow(() -> new ResourceNotFoundException("Patient Record Not Found"));
-        ;
-        if (patientRecord.getStatus() != PatientRecordStatus.DOCTOR_IN_PROGRESS) {
-            throw new ResourceNotFoundException(String.format("patient record %s not found", appointmentRequest.getPatientRecordId()));
-        }
-        // save doctor appointment
-        DoctorAppointment doctorAppointment = appointmentMapper.fromAppointmentRequestToDoctorAppointment(appointmentRequest);
-        doctorAppointment = appointmentRepository.save(doctorAppointment);
+			if (patientRecord.getAppointmentId() != null
+					&& patientRecord.getStatus() == PatientRecordStatus.DOCTOR_APPOINTMENT) {
+				// delete doctor appointment
+				appointmentRepository.deleteByAppointmentId(patientRecord.getAppointmentId());
+			}
 
-        // update patient record
-        patientRecordService.afterAppointment(doctorAppointment, patientRecord, PatientRecordStatus.DOCTOR_APPOINTMENT);
-    }
+			patientRecordService.afterRejectingPatient(patientRecord, PatientRecordStatus.DOCTOR_REJECTED);
+			return;
+		}
+		throw new ResourceNotFoundException("patient record not found");
+	}
 
-    public void rejectAssignedPatient(String patientRecordId) {
-        PatientRecord patientRecord = patientRecordRepository.findByPatientRecordId(patientRecordId).orElseThrow(() -> new ResourceNotFoundException("Patient record Not found"));
-        if (patientRecord != null &&
-                (patientRecord.getStatus() == PatientRecordStatus.DOCTOR_IN_PROGRESS || patientRecord.getStatus() == PatientRecordStatus.DOCTOR_APPOINTMENT)) {
-            assignedPatientRepository.deleteById(patientRecord.getAssignedPatientId());
+	public void deleteAppointment(String appointmentId) {
+		DoctorAppointment appointmentDetails = appointmentRepository.findByAppointmentId(appointmentId);
+		appointmentRepository.deleteByAppointmentId(appointmentId);
+		PatientRecord record = patientRecordRepository.findByPatientRecordId(appointmentDetails.getPatientRecordId())
+				.orElseThrow(() -> new ResourceNotFoundException("Patient record not found"));
+		patientRecordRepository.deletePatientRecordByPatientRecordId(appointmentDetails.getPatientRecordId());
+		record.setStatus(PatientRecordStatus.DOCTOR_IN_PROGRESS);
+		patientRecordRepository.save(record);
+	}
 
-            if (patientRecord.getAppointmentId() != null &&
-                    patientRecord.getStatus() == PatientRecordStatus.DOCTOR_APPOINTMENT) {
-                // delete doctor appointment
-                appointmentRepository.deleteByAppointmentId(patientRecord.getAppointmentId());
-            }
+	public void editAppointment(@Valid AppointmentRequest appointmentRequest) {
 
-            patientRecordService.afterRejectingPatient(patientRecord, PatientRecordStatus.DOCTOR_REJECTED);
-            return;
-        }
-        throw new ResourceNotFoundException("patient record not found");
-    }
-    public void deleteAppointment(String appointmentId){
-        DoctorAppointment appointmentDetails=appointmentRepository.findByAppointmentId(appointmentId);
-        appointmentRepository.deleteByAppointmentId(appointmentId);
-        PatientRecord record=patientRecordRepository.findByPatientRecordId(appointmentDetails.getPatientRecordId()).orElseThrow(()->new ResourceNotFoundException("Patient record not found"));
-        patientRecordRepository.deletePatientRecordByPatientRecordId(appointmentDetails.getPatientRecordId());
-        record.setStatus(PatientRecordStatus.DOCTOR_IN_PROGRESS);
-        patientRecordRepository.save(record);
-    }
+		String doctorId = userCommonService.getUser().getUserId();
+		if (!patientRecordRepository.existsByPatientRecordId(appointmentRequest.getPatientRecordId())) {
+			throw new ResourceNotFoundException(
+					String.format("patient record %s not found", appointmentRequest.getPatientRecordId()));
+		}
+
+		if (appointmentRepository.existsByDoctorIdAndStartDateTimeBetweenOrStartDateTimeEquals(doctorId,
+				appointmentRequest.getStartDateTime(), appointmentRequest.getEndDateTime(),
+				appointmentRequest.getStartDateTime())
+				|| appointmentRepository.existsByDoctorIdAndStartDateTimeBetweenOrStartDateTimeEquals(
+						doctorId, appointmentRequest.getStartDateTime(), appointmentRequest.getEndDateTime(),
+						appointmentRequest.getEndDateTime())) {
+			throw new AlreadyExistsException("There is a Conflict!! Already Reserved TimeSlot.");
+		}
+
+		PatientRecord patientRecord = patientRecordRepository
+				.findByPatientRecordId(appointmentRequest.getPatientRecordId())
+				.orElseThrow(() -> new ResourceNotFoundException("Patient not found"));
+		DoctorAppointment existingAppointment = appointmentRepository
+				.findByAppointmentId(patientRecord.getAppointmentId());
+		if (existingAppointment == null) {
+			throw new InvalidAppointmentRequestException("No Appoint exists for this patient. Create one first!!");
+		}
+		existingAppointment.update();
+		existingAppointment.setStartDateTime(appointmentRequest.getStartDateTime());
+		existingAppointment.setEndDateTime(appointmentRequest.getEndDateTime());
+		appointmentRepository.save(existingAppointment);
+
+	}
 }
