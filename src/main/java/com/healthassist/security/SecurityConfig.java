@@ -45,10 +45,22 @@ public class SecurityConfig {
 				.antMatchers(HttpMethod.POST, "/api/v1/doctor/signup").permitAll()
 				.antMatchers(HttpMethod.GET, "/api/v1/patient/assessment/**").hasAuthority("ROLE_PATIENT")
 				.antMatchers(HttpMethod.GET, "/api/v1/counselor/patient").hasAuthority("ROLE_COUNSELOR")
+				.antMatchers(HttpMethod.GET, "/api/v1/counselor/patient/**").hasAuthority("ROLE_COUNSELOR")
 				.antMatchers(HttpMethod.POST, "/api/v1/counselor/patient/appointment").hasAuthority("ROLE_COUNSELOR")
 				.antMatchers(HttpMethod.POST, "/api/v1/counselor/patient/appointments").hasAuthority("ROLE_COUNSELOR")
-				.antMatchers("/api/v1/counselor/patient/**").hasAuthority("ROLE_COUNSELOR")
-				.antMatchers("/api/v1/doctor/patient").hasAuthority("ROLE_DOCTOR");
+				.antMatchers(HttpMethod.GET, "/api/v1/counselor/patient/appointment").hasAuthority("ROLE_COUNSELOR")
+				.antMatchers(HttpMethod.DELETE, "/api/v1/counselor/appointment/**").hasAuthority("ROLE_COUNSELOR")
+				.antMatchers(HttpMethod.GET, "/api/v1/counselor/doctor").hasAuthority("ROLE_COUNSELOR")
+				.antMatchers(HttpMethod.POST, "/api/v1/counselor/doctor").hasAuthority("ROLE_COUNSELOR")
+				.antMatchers(HttpMethod.DELETE, "/api/v1/counselor/patient/**").hasAuthority("ROLE_COUNSELOR")
+				.antMatchers(HttpMethod.PUT, "/api/v1/counselor/patient/appointment").hasAuthority("ROLE_COUNSELOR")
+				.antMatchers(HttpMethod.GET, "/api/v1/doctor/patient").hasAuthority("ROLE_DOCTOR")
+				.antMatchers(HttpMethod.GET, "/api/v1/doctor/patient/**").hasAuthority("ROLE_DOCTOR")
+				.antMatchers(HttpMethod.GET, "/api/v1/doctor/patient/appointment").hasAuthority("ROLE_DOCTOR")
+				.antMatchers(HttpMethod.POST,"/api/v1/doctor/patient/appointments").hasAuthority("ROLE_DOCTOR")
+				.antMatchers(HttpMethod.POST, "/api/v1/doctor/patient/appointment").hasAuthority("ROLE_DOCTOR")
+				.antMatchers(HttpMethod.DELETE, "/api/v1/doctor/patient/**").hasAuthority("ROLE_DOCTOR")
+				.antMatchers(HttpMethod.DELETE, "/api/v1/doctor/appointment/**").hasAuthority("ROLE_DOCTOR");
 
 		JWTAuthenticationFilter authenticationTokenFilter = new JWTAuthenticationFilter(jwtUserDetailsService,
 				jwtService, tokenHeader);
