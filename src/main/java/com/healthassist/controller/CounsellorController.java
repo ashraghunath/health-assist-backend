@@ -36,7 +36,6 @@ public class CounsellorController {
 
     @PostMapping(value = "/signup")
     public LoginResponse signup(@Valid @RequestBody UserRequest request) {
-
         return baseService.signUp(request, AuthorityName.ROLE_COUNSELOR);
     }
 
@@ -54,14 +53,12 @@ public class CounsellorController {
 
     @PostMapping(value = "/patient/appointment")
     public void makeCounselorAppointment(@Valid @RequestBody AppointmentRequest appointmentRequest) {
-    	System.out.println("making the appointment");
         counselorService.storeCounselorAppointment(appointmentRequest);
     }
 
     @PostMapping(value = "/patient/appointments")
     public List<AppointmentListForDateResponse> getCounselorAppointmentsByDate(
             @Valid @RequestBody AppointmentListForDateRequest request) {
-    	System.out.println("making the appointmentss");
         return counselorService.getCounselorAppointmentsByDate(request);
     }
 
@@ -89,10 +86,10 @@ public class CounsellorController {
         counselorService.assignDoctorToPatient(doctorAssignmentRequest);
     }
 
-	@DeleteMapping(value = "/patient/{patientRecordId}")
-	public void rejectPatient(@PathVariable String patientRecordId) {
-		counselorService.rejectPatient(patientRecordId);
-	}
+    @DeleteMapping(value = "/patient/{patientRecordId}")
+    public void rejectPatient(@PathVariable String patientRecordId) {
+        counselorService.rejectPatient(patientRecordId);
+    }
 
     @PutMapping(value = "/patient/appointment")
     public void editAppointment(@Valid @RequestBody AppointmentRequest appointmentRequest) {

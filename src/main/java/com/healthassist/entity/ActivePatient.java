@@ -21,5 +21,7 @@ public class ActivePatient extends DateDomainObject {
 
     @Indexed(unique = true)
     private String patientRecordId;
+    
+    private String appointmentId;
 
 }

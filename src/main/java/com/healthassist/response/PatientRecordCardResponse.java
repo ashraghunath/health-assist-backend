@@ -13,4 +13,5 @@ public class PatientRecordCardResponse {
     private String patientRecordId;
     private UserCardResponse patient;
     private LocalDateTime assessmentCreatedAt;
+    private String appointmentId;
 }
