@@ -7,10 +7,13 @@ import com.healthassist.request.UserRequest;
 import com.healthassist.response.AssessmentResponse;
 import com.healthassist.response.LoginResponse;
 import com.healthassist.response.PatientRecordStatusResponse;
+import com.healthassist.response.UserProfileResponse;
 import com.healthassist.service.AssessmentService;
 import com.healthassist.service.BaseService;
 import com.healthassist.service.PatientService;
+import com.healthassist.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.healthassist.request.UserUpdateRequest;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -28,6 +31,9 @@ public class PatientController {
 
     @Autowired
     private PatientService patientService;
+
+    @Autowired
+    private UserService userService;
 
     @PostMapping("/signup")
     public LoginResponse signUp(@Valid @RequestBody UserRequest request) {
@@ -52,5 +58,15 @@ public class PatientController {
     @GetMapping("/status")
     public PatientRecordStatusResponse getStatus() {
         return patientService.getPatientRecordStatus();
+    }
+
+    @GetMapping(value = "/profile")
+    public UserProfileResponse getProfileCard() {
+        return userService.getProfileCard();
+    }
+
+    @PatchMapping(value = "/profile")
+    public UserProfileResponse updateProfile(@RequestBody UserUpdateRequest userUpdateRequest) {
+        return userService.updateProfile(userUpdateRequest);
     }
 }
