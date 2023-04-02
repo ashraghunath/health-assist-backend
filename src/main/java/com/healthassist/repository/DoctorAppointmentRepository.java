@@ -26,4 +26,8 @@ public interface DoctorAppointmentRepository extends MongoRepository<DoctorAppoi
 
     void deleteByAppointmentId(String appointmentId);
 
+	Integer countByStartDateTimeBetween(LocalDateTime startDateTime, LocalDateTime endDateTime);
+
+	Integer countBy();
+
 }
