@@ -20,8 +20,14 @@ import com.healthassist.response.AdminPatientReportParameters;
 import com.healthassist.response.LoginResponse;
 import com.healthassist.service.AdminService;
 import com.healthassist.service.BaseService;
-
-
+import com.healthassist.request.UserRequest;
+import com.healthassist.response.AdminPatientCard;
+import com.healthassist.response.AdminUserCreateResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin
@@ -37,7 +43,7 @@ public class AdminController {
 	@Autowired
 	BaseService baseService;
 	
-	@RequestMapping(value = "/login", method = RequestMethod.POST)
+	@PostMapping(value = "/login")
     public LoginResponse login(@Valid @RequestBody LoginRequest request) {
         return baseService.login(request, AuthorityName.ROLE_ADMIN);
     }
@@ -55,5 +61,14 @@ public class AdminController {
         return adminService.getAdminPatientReportParameters();
     }
 
-
+    @GetMapping(value = "/patient")
+    public Page<AdminPatientCard> getPatients(@RequestParam(defaultValue = "0") Integer page,
+                                              @RequestParam(defaultValue = "10") Integer size) {
+        Pageable paging = PageRequest.of(page, size);
+        return adminService.getPatients(paging);
+    }
+    @PostMapping(value = "/patient")
+    public AdminUserCreateResponse createPatient(@Valid @RequestBody UserRequest userRequest) {
+        return adminService.createPatient(userRequest);
+    }
 }

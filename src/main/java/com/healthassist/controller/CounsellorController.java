@@ -36,7 +36,7 @@ public class CounsellorController {
 
     @PostMapping(value = "/signup")
     public LoginResponse signup(@Valid @RequestBody UserRequest request) {
-        return baseService.signUp(request, AuthorityName.ROLE_COUNSELOR);
+        return baseService.signUp(request, AuthorityName.ROLE_COUNSELOR, false);
     }
 
     @GetMapping(value = "/patient")

@@ -1,8 +1,14 @@
 package com.healthassist.response;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
-public class AdminPatientCard extends UserCardResponse {
+@Getter
+@Setter
+public class AdminPatientCard extends UserCardResponse  {
+
     LocalDateTime createdAt;
 
     public AdminPatientCard(UserCardResponse userCardResponse){
@@ -12,11 +18,6 @@ public class AdminPatientCard extends UserCardResponse {
         this.setRegistrationNumber(userCardResponse.getRegistrationNumber());
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
 }
+
+
