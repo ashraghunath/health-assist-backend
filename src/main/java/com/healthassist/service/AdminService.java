@@ -52,9 +52,10 @@ public class AdminService {
 	public AdminPatientReport getAdminPatientReportByRange(LocalDateTime startDateTime, LocalDateTime endDateTime) {
 		AdminPatientReport report = new AdminPatientReport();
 		List<User> patientCardPage = userRepository.findByAuthorityContainsAndCreatedAtBetweenAndDeletedFalseOrderByCreatedAt
-				(Collections.singleton(com.healthassist.common.AuthorityName.ROLE_PATIENT),
+				(AuthorityName.ROLE_PATIENT,
 						startDateTime,
 						endDateTime);
+		System.out.println(patientCardPage.toString());
 		report.setPatients(patientCardPage.stream().map(userMapper::toAdminPatientCard).collect(Collectors.toList()));
 		report.setNumAttemptedAssessment(activePatientRepository.countByCreatedAtBetween(startDateTime, endDateTime));
 		report.setNumTotal(patientCardPage.size());
@@ -67,7 +68,7 @@ public class AdminService {
 
 	public AdminPatientReportParameters getAdminPatientReportParameters() {
 		AdminPatientReportParameters report = new AdminPatientReportParameters();
-		Integer totalUsers = userRepository.countByAuthorityContains(Collections.singleton(AuthorityName.ROLE_PATIENT));
+		Integer totalUsers = userRepository.countByAuthorityContains(AuthorityName.ROLE_PATIENT);
 		report.setNumAttemptedAssessment(activePatientRepository.countBy());
 		report.setNumTotal(totalUsers);
 		report.setNumHasCounselorAppointment(counselorAppointmentRepository.countBy());
