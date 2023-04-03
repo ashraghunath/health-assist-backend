@@ -6,14 +6,8 @@ import com.healthassist.entity.User;
 import com.healthassist.repository.AssignedPatientRepository;
 import com.healthassist.request.UserRequest;
 import com.healthassist.request.UserUpdateRequest;
-import com.healthassist.response.AdminPatientCard;
-import com.healthassist.response.CounselorDoctorCardResponse;
-import com.healthassist.response.UserCardResponse;
-import com.healthassist.response.UserProfileResponse;
-import com.healthassist.response.UserResponse;
+import com.healthassist.response.*;
 import com.healthassist.util.TimeUtil;
-
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -110,7 +104,7 @@ public class UserMapper {
             user.setDateOfBirth(userUpdateRequest.getDateOfBirth());
         return user;
     }
-    
+
     public AdminPatientCard toAdminPatientCard(User user) {
         AdminPatientCard adminPatientCard = new AdminPatientCard(toUserCardResponse(user));
         adminPatientCard.setCreatedAt(user.getCreatedAt());
