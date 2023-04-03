@@ -43,7 +43,7 @@ public class AdminController {
 	@Autowired
 	BaseService baseService;
 	
-	@RequestMapping(value = "/login", method = RequestMethod.POST)
+	@PostMapping(value = "/login")
     public LoginResponse login(@Valid @RequestBody LoginRequest request) {
         return baseService.login(request, AuthorityName.ROLE_ADMIN);
     }
