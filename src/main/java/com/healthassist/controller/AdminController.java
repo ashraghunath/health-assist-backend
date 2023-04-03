@@ -67,7 +67,7 @@ public class AdminController {
         Pageable paging = PageRequest.of(page, size);
         return adminService.getPatients(paging);
     }
-    @PostAuthorize(value = "/patient")
+    @PostMapping(value = "/patient")
     public AdminUserCreateResponse createPatient(@Valid @RequestBody UserRequest userRequest) {
         return adminService.createPatient(userRequest);
     }
