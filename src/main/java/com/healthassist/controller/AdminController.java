@@ -1,6 +1,5 @@
 package com.healthassist.controller;
 
-import java.time.LocalDateTime;
 
 import javax.validation.Valid;
 
@@ -8,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,7 +24,6 @@ import com.healthassist.response.AdminUserCreateResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -48,7 +45,7 @@ public class AdminController {
         return baseService.login(request, AuthorityName.ROLE_ADMIN);
     }
 	
-	@RequestMapping(value = "/report", method = RequestMethod.GET)
+	@GetMapping(value = "/report")
     public AdminPatientReport getAdminPatientReport(@RequestParam Long startDateTime,
                                                     @RequestParam Long endDateTime) {
         return adminService.getAdminPatientReportByRange(
@@ -56,7 +53,7 @@ public class AdminController {
                 localDateTimeReadConverter.convert(endDateTime));
     }
 
-    @RequestMapping(value = "/report-parameters", method = RequestMethod.GET)
+    @GetMapping(value = "/report-parameters")
     public AdminPatientReportParameters getAdminPatientReportParameters() {
         return adminService.getAdminPatientReportParameters();
     }

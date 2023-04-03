@@ -25,11 +25,13 @@ public interface UserRepository extends MongoRepository<User, String> {
 
     boolean existsByRegistrationNumberAndDeletedFalse(String registrationNumber);
 
-    Page<User> findByAuthorityContainsAndDeletedFalseOrderByCreatedAtDesc(AuthorityName authorities, Pageable pageable);
+    Page<User> findByAuthorityContainsAndDeletedFalseOrderByCreatedAtDesc(AuthorityName authority, Pageable pageable);
 
-	List<User> findByAuthorityContainsAndCreatedAtBetweenAndDeletedFalseOrderByCreatedAt(Set<AuthorityName> singleton,
+	List<User> findByAuthorityContainsAndCreatedAtBetweenAndDeletedFalseOrderByCreatedAt(AuthorityName authority,
 			LocalDateTime startDateTime, LocalDateTime endDateTime);
 
-	Integer countByAuthorityContains(Set<AuthorityName> singleton);
+	Integer countByAuthorityContains(AuthorityName authority);
+
+
     
 }
