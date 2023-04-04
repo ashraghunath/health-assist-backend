@@ -67,6 +67,13 @@ public class AdminController {
         return adminService.getPatients(paging);
     }
 
+    @GetMapping(value = "/counselor")
+    public Page<AdminCounselorCard> getCounselors(@RequestParam(defaultValue = "0") Integer page,
+                                                  @RequestParam(defaultValue = "10") Integer size) {
+        Pageable paging = PageRequest.of(page, size);
+        return adminService.getCounselors(paging);
+    }
+
     @RequestMapping(value = "/doctor", method = RequestMethod.GET)
     public Page<AdminDoctorCard> getDoctors(@RequestParam(defaultValue = "0") Integer page,
                                             @RequestParam(defaultValue = "10") Integer size) {
@@ -80,11 +87,20 @@ public class AdminController {
         return adminService.createPatient(userRequest);
     }
 
+    @PostMapping(value = "/counselor")
+    public AdminUserCreateResponse createCounselor(@Valid @RequestBody UserRequest userRequest) {
+        return adminService.createCounselor(userRequest);
+    }
+
     @RequestMapping(value = "/doctor", method = RequestMethod.POST)
     public AdminUserCreateResponse createDoctor(@Valid @RequestBody UserRequest userRequest) {
         return adminService.createDoctor(userRequest);
     }
 
+    @DeleteMapping(value = "/counselor/{email}")
+    public void removeCounselor(@PathVariable String email) {
+        adminService.removeCounselor(email);
+    }
     @RequestMapping(value = "/doctor/{email}", method = RequestMethod.DELETE)
     public void removeDoctor(@PathVariable String email) {
         adminService.removeDoctor(email);
