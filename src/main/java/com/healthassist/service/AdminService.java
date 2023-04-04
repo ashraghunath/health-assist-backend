@@ -57,6 +57,9 @@ public class AdminService {
     @Autowired
     private PatientRecordService patientRecordService;
 
+    @Autowired
+    private AssessmentResultRepository assessmentResultRepository;
+
     public void createAssessment(Assessment assessment) {
         assessmentRepository.save(assessment);
     }
@@ -136,19 +139,23 @@ public class AdminService {
         removeUser(emailAddress, AuthorityName.ROLE_DOCTOR);
     }
 
+    public void removePatient(String emailAddress) {
+        removeUser(emailAddress, AuthorityName.ROLE_PATIENT);
+    }
+
     private void removeUser(String emailAddress, AuthorityName authorityName) {
         {
             User user = userRepository.findByEmailAddressAndAuthorityAndDeletedFalse(emailAddress, authorityName);
-            System.out.println("hola" + user);
-/*		if (authorityName == AuthorityName.ROLE_PATIENT) {
-			activePatientRepository.deleteByPatientId(user.getUserId());
-			assessmentResultRepository.deleteByPatientId(user.getUserId());
-			assignedPatientRepository.deleteByPatientId(user.getUserId());
-			counselorAppointmentRepository.deleteByPatientId(user.getUserId());
-			doctorAppointmentRepository.deleteByPatientId(user.getUserId());
-			patientRecordRepository.deleteByPatientId(user.getUserId());
-		}
-		if (authorityName == AuthorityName.ROLE_COUNSELOR) {
+
+            if (authorityName == AuthorityName.ROLE_PATIENT) {
+                activePatientRepository.deleteByPatientId(user.getUserId());
+                assessmentResultRepository.deleteByPatientId(user.getUserId());
+                assignedPatientRepository.deleteByPatientId(user.getUserId());
+                counselorAppointmentRepository.deleteByPatientId(user.getUserId());
+                doctorAppointmentRepository.deleteByPatientId(user.getUserId());
+                patientRecordRepository.deleteByPatientId(user.getUserId());
+            }
+		/* if (authorityName == AuthorityName.ROLE_COUNSELOR) {
 			List<CounselorAppointment> appointments = counselorAppointmentRepository.findByCounselorId(user.getUserId());
 			for (CounselorAppointment appointment : appointments) {
 				List<PatientRecord> patientRecords = patientRecordRepository.findByAppointmentIdAndStatus(appointment.getAppointmentId(), PatientRecordStatus.COUNSELOR_APPOINTMENT);

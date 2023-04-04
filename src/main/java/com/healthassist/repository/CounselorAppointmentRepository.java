@@ -40,4 +40,6 @@ public interface CounselorAppointmentRepository extends MongoRepository<Counselo
 
 	Integer countBy();
 
+	void deleteByPatientId(String patientId);
+
 }

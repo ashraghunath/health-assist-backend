@@ -19,4 +19,6 @@ public interface PatientRecordRepository extends MongoRepository<PatientRecord, 
     List<PatientRecord> findByAppointmentIdAndStatus(String appointmentId, PatientRecordStatus patientRecordStatus);
 
     void deleteByPatientRecordId(String patientRecordId);
+
+    void deleteByPatientId(String patientId);
 }

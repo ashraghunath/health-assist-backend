@@ -27,11 +27,11 @@ public interface UserRepository extends MongoRepository<User, String> {
 
     Page<User> findByAuthorityContainsAndDeletedFalseOrderByCreatedAtDesc(AuthorityName authority, Pageable pageable);
 
-	List<User> findByAuthorityContainsAndCreatedAtBetweenAndDeletedFalseOrderByCreatedAt(AuthorityName authority,
-			LocalDateTime startDateTime, LocalDateTime endDateTime);
+    List<User> findByAuthorityContainsAndCreatedAtBetweenAndDeletedFalseOrderByCreatedAt(AuthorityName authority,
+                                                                                         LocalDateTime startDateTime, LocalDateTime endDateTime);
 
-	Integer countByAuthorityContains(AuthorityName authority);
+    Integer countByAuthorityContains(AuthorityName authority);
 
 
-    
+
 }
