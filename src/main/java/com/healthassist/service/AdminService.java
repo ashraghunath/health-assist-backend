@@ -135,8 +135,17 @@ public class AdminService {
 		removeUser(emailAddress, AuthorityName.ROLE_DOCTOR);
 	}
 
-	private void removeUser(String emailAddress, AuthorityName authorityName) {
-		User user = userRepository.findByEmailAddressAndAuthorityContainsAndDeletedFalse(emailAddress, Collections.singleton(authorityName));
+	private void removeUser(String emailAddress, AuthorityName authorityName) {{
+		User user = userRepository.findByEmailAddressAndAuthorityAndDeletedFalse(emailAddress, authorityName);
+		System.out.println("hola" + user);
+/*		if (authorityName == AuthorityName.ROLE_PATIENT) {
+			activePatientRepository.deleteByPatientId(user.getUserId());
+			assessmentResultRepository.deleteByPatientId(user.getUserId());
+			assignedPatientRepository.deleteByPatientId(user.getUserId());
+			counselorAppointmentRepository.deleteByPatientId(user.getUserId());
+			doctorAppointmentRepository.deleteByPatientId(user.getUserId());
+			patientRecordRepository.deleteByPatientId(user.getUserId());
+		}
 		if (authorityName == AuthorityName.ROLE_COUNSELOR) {
 			List<CounselorAppointment> appointments = counselorAppointmentRepository.findByCounselorId(user.getUserId());
 			for (CounselorAppointment appointment : appointments) {
@@ -154,7 +163,7 @@ public class AdminService {
 				});
 				counselorAppointmentRepository.deleteByAppointmentId(appointment.getAppointmentId());
 			}
-		}
+		}*/
 		if (authorityName == AuthorityName.ROLE_DOCTOR) {
 			List<DoctorAppointment> appointments = doctorAppointmentRepository.findByDoctorId(user.getUserId());
 			for (DoctorAppointment appointment : appointments) {
