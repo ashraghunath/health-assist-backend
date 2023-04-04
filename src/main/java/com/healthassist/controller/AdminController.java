@@ -3,6 +3,8 @@ package com.healthassist.controller;
 
 import javax.validation.Valid;
 
+import com.healthassist.entity.Assessment;
+import com.healthassist.response.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,14 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.healthassist.common.AuthorityName;
 import com.healthassist.converter.LocalDateTimeReadConverter;
 import com.healthassist.request.LoginRequest;
-import com.healthassist.response.AdminPatientReport;
-import com.healthassist.response.AdminPatientReportParameters;
-import com.healthassist.response.LoginResponse;
 import com.healthassist.service.AdminService;
 import com.healthassist.service.BaseService;
 import com.healthassist.request.UserRequest;
-import com.healthassist.response.AdminPatientCard;
-import com.healthassist.response.AdminUserCreateResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -39,6 +36,11 @@ public class AdminController {
 	
 	@Autowired
 	BaseService baseService;
+
+    @RequestMapping(value = "/assessment", method = RequestMethod.POST)
+    public void createAssessment(@Valid @RequestBody Assessment assessment) {
+        adminService.createAssessment(assessment);
+    }
 	
 	@PostMapping(value = "/login")
     public LoginResponse login(@Valid @RequestBody LoginRequest request) {
@@ -64,8 +66,48 @@ public class AdminController {
         Pageable paging = PageRequest.of(page, size);
         return adminService.getPatients(paging);
     }
+
+    @GetMapping(value = "/counselor")
+    public Page<AdminCounselorCard> getCounselors(@RequestParam(defaultValue = "0") Integer page,
+                                                  @RequestParam(defaultValue = "10") Integer size) {
+        Pageable paging = PageRequest.of(page, size);
+        return adminService.getCounselors(paging);
+    }
+
+    @RequestMapping(value = "/doctor", method = RequestMethod.GET)
+    public Page<AdminDoctorCard> getDoctors(@RequestParam(defaultValue = "0") Integer page,
+                                            @RequestParam(defaultValue = "10") Integer size) {
+        Pageable paging = PageRequest.of(page, size);
+        return adminService.getDoctors(paging);
+    }
+
+
     @PostMapping(value = "/patient")
     public AdminUserCreateResponse createPatient(@Valid @RequestBody UserRequest userRequest) {
         return adminService.createPatient(userRequest);
+    }
+
+    @PostMapping(value = "/counselor")
+    public AdminUserCreateResponse createCounselor(@Valid @RequestBody UserRequest userRequest) {
+        return adminService.createCounselor(userRequest);
+    }
+
+    @RequestMapping(value = "/doctor", method = RequestMethod.POST)
+    public AdminUserCreateResponse createDoctor(@Valid @RequestBody UserRequest userRequest) {
+        return adminService.createDoctor(userRequest);
+    }
+
+    @DeleteMapping(value = "/counselor/{email}")
+    public void removeCounselor(@PathVariable String email) {
+        adminService.removeCounselor(email);
+    }
+    @RequestMapping(value = "/doctor/{email}", method = RequestMethod.DELETE)
+    public void removeDoctor(@PathVariable String email) {
+        adminService.removeDoctor(email);
+    }
+
+    @RequestMapping(value = "/reset", method = RequestMethod.DELETE)
+    public void resetUsers() {
+        adminService.resetUsers();
     }
 }

@@ -110,4 +110,16 @@ public class UserMapper {
         adminPatientCard.setCreatedAt(user.getCreatedAt());
         return adminPatientCard;
     }
+
+    public AdminCounselorCard toAdminCounselorCard(User user) {
+        AdminCounselorCard adminCounselorCard = new AdminCounselorCard(toUserCardResponse(user));
+        adminCounselorCard.setCreatedAt(user.getCreatedAt());
+        return adminCounselorCard;
+    }
+
+    public AdminDoctorCard toAdminDoctorCard(User user) {
+        AdminDoctorCard adminDoctorCard = new AdminDoctorCard(toUserCardResponse(user));
+        adminDoctorCard.setCreatedAt(user.getCreatedAt());
+        return adminDoctorCard;
+    }
 }
