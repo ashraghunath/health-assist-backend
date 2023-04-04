@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import com.healthassist.common.PatientRecordStatus;
 import com.healthassist.entity.Assessment;
+import com.healthassist.entity.CounselorAppointment;
 import com.healthassist.entity.DoctorAppointment;
 import com.healthassist.entity.PatientRecord;
 import com.healthassist.exception.ResourceNotFoundException;
@@ -94,6 +95,11 @@ public class AdminService {
 		return patientCardPage.map(userMapper::toAdminPatientCard);
 	}
 
+	public Page<AdminCounselorCard> getCounselors(Pageable pageable) {
+		Page<User> patientCardPage = userRepository.findByAuthorityContainsAndDeletedFalseOrderByCreatedAtDesc(AuthorityName.ROLE_COUNSELOR, pageable);
+		return patientCardPage.map(userMapper::toAdminCounselorCard);
+	}
+
 	public Page<AdminDoctorCard> getDoctors(Pageable pageable) {
 		Page<User> patientCardPage = userRepository.findByAuthorityContainsAndDeletedFalseOrderByCreatedAtDesc(AuthorityName.ROLE_DOCTOR, pageable);
 		return patientCardPage.map(userMapper::toAdminDoctorCard);
@@ -101,6 +107,10 @@ public class AdminService {
 
 	public AdminUserCreateResponse createPatient(UserRequest userRequest) {
 		return createUser(userRequest, AuthorityName.ROLE_PATIENT);
+	}
+
+	public AdminUserCreateResponse createCounselor(UserRequest userRequest) {
+		return createUser(userRequest, AuthorityName.ROLE_COUNSELOR);
 	}
 
 	public AdminUserCreateResponse createDoctor(UserRequest userRequest) {
@@ -118,21 +128,15 @@ public class AdminService {
 		return response;
 	}
 
+	public void removeCounselor(String emailAddress) {
+		removeUser(emailAddress, AuthorityName.ROLE_COUNSELOR);
+	}
 	public void removeDoctor(String emailAddress) {
 		removeUser(emailAddress, AuthorityName.ROLE_DOCTOR);
 	}
 
 	private void removeUser(String emailAddress, AuthorityName authorityName) {
 		User user = userRepository.findByEmailAddressAndAuthorityContainsAndDeletedFalse(emailAddress, Collections.singleton(authorityName));
-		System.out.println("hola" + user);
-/*		if (authorityName == AuthorityName.ROLE_PATIENT) {
-			activePatientRepository.deleteByPatientId(user.getUserId());
-			assessmentResultRepository.deleteByPatientId(user.getUserId());
-			assignedPatientRepository.deleteByPatientId(user.getUserId());
-			counselorAppointmentRepository.deleteByPatientId(user.getUserId());
-			doctorAppointmentRepository.deleteByPatientId(user.getUserId());
-			patientRecordRepository.deleteByPatientId(user.getUserId());
-		}
 		if (authorityName == AuthorityName.ROLE_COUNSELOR) {
 			List<CounselorAppointment> appointments = counselorAppointmentRepository.findByCounselorId(user.getUserId());
 			for (CounselorAppointment appointment : appointments) {
@@ -150,7 +154,7 @@ public class AdminService {
 				});
 				counselorAppointmentRepository.deleteByAppointmentId(appointment.getAppointmentId());
 			}
-		}*/
+		}
 		if (authorityName == AuthorityName.ROLE_DOCTOR) {
 			List<DoctorAppointment> appointments = doctorAppointmentRepository.findByDoctorId(user.getUserId());
 			for (DoctorAppointment appointment : appointments) {
