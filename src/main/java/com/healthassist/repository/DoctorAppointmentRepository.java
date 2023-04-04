@@ -32,4 +32,6 @@ public interface DoctorAppointmentRepository extends MongoRepository<DoctorAppoi
 
     List<DoctorAppointment> findByDoctorId(String counselorId);
 
+    void deleteByPatientId(String patientId);
+
 }

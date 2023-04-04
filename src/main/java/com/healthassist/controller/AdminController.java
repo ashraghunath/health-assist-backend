@@ -110,4 +110,10 @@ public class AdminController {
     public void resetUsers() {
         adminService.resetUsers();
     }
+
+    @DeleteMapping(value = "/patient/{email}")
+    public void removePatient(@PathVariable String email) {
+        adminService.removePatient(email);
+    }
+
 }

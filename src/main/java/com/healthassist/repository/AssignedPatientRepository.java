@@ -23,4 +23,6 @@ public interface AssignedPatientRepository extends MongoRepository<AssignedPatie
 	Integer countBy();
 
     void deleteByDoctorRegistrationNumber(String doctorRegistrationNumber);
+
+    void deleteByPatientId(String patientId);
 }
