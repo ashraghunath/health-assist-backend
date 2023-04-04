@@ -6,6 +6,7 @@ import com.healthassist.response.*;
 import com.healthassist.service.BaseService;
 import com.healthassist.service.CounselorService;
 import com.healthassist.service.PatientService;
+import com.healthassist.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +29,9 @@ public class CounsellorController {
 
     @Autowired
     private CounselorService counselorService;
+
+    @Autowired
+    private UserService userService;
 
     @PostMapping(value = "/login")
     public LoginResponse login(@Valid @RequestBody LoginRequest request) {
@@ -96,5 +100,13 @@ public class CounsellorController {
         counselorService.editAppointment(appointmentRequest);
     }
 
+    @GetMapping("/profile")
+    public UserProfileResponse getProfileCard() {
+        return userService.getProfileCard();
+    }
 
+    @PatchMapping("/profile")
+    public UserProfileResponse updateProfile(@RequestBody UserUpdateRequest userUpdateRequest) {
+        return userService.updateProfile(userUpdateRequest);
+    }
 }

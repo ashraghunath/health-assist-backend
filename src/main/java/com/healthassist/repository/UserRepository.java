@@ -25,6 +25,8 @@ public interface UserRepository extends MongoRepository<User, String> {
 
     boolean existsByRegistrationNumberAndDeletedFalse(String registrationNumber);
 
+    User findByEmailAddressAndAuthorityContainsAndDeletedFalse(String emailAddress, Set<AuthorityName> authorityNames);
+
     Page<User> findByAuthorityContainsAndDeletedFalseOrderByCreatedAtDesc(AuthorityName authority, Pageable pageable);
 
 	List<User> findByAuthorityContainsAndCreatedAtBetweenAndDeletedFalseOrderByCreatedAt(AuthorityName authority,

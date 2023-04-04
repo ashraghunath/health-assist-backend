@@ -30,4 +30,6 @@ public interface DoctorAppointmentRepository extends MongoRepository<DoctorAppoi
 
 	Integer countBy();
 
+    List<DoctorAppointment> findByDoctorId(String counselorId);
+
 }
