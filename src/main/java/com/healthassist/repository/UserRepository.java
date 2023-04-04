@@ -5,9 +5,7 @@ import com.healthassist.entity.User;
 import com.healthassist.response.CounselorDoctorCardResponse;
 
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +23,7 @@ public interface UserRepository extends MongoRepository<User, String> {
 
     boolean existsByRegistrationNumberAndDeletedFalse(String registrationNumber);
 
-    User findByEmailAddressAndAuthorityContainsAndDeletedFalse(String emailAddress, Set<AuthorityName> authorityNames);
+    User findByEmailAddressAndAuthorityAndDeletedFalse(String emailAddress, AuthorityName authorityNames);
 
     Page<User> findByAuthorityContainsAndDeletedFalseOrderByCreatedAtDesc(AuthorityName authority, Pageable pageable);
 

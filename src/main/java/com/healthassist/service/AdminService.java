@@ -123,7 +123,7 @@ public class AdminService {
 	}
 
 	private void removeUser(String emailAddress, AuthorityName authorityName) {
-		User user = userRepository.findByEmailAddressAndAuthorityContainsAndDeletedFalse(emailAddress, Collections.singleton(authorityName));
+		User user = userRepository.findByEmailAddressAndAuthorityAndDeletedFalse(emailAddress, authorityName);
 		System.out.println("hola" + user);
 /*		if (authorityName == AuthorityName.ROLE_PATIENT) {
 			activePatientRepository.deleteByPatientId(user.getUserId());
