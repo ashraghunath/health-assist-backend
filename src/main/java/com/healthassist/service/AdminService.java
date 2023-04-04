@@ -5,6 +5,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.healthassist.common.PatientRecordStatus;
+import com.healthassist.entity.Assessment;
+import com.healthassist.entity.DoctorAppointment;
+import com.healthassist.entity.PatientRecord;
+import com.healthassist.exception.ResourceNotFoundException;
+import com.healthassist.repository.*;
 import com.healthassist.request.UserRequest;
 import com.healthassist.response.*;
 import com.healthassist.util.UserUtil;
@@ -13,17 +19,15 @@ import org.springframework.stereotype.Service;
 
 import com.healthassist.entity.User;
 import com.healthassist.mapper.UserMapper;
-import com.healthassist.repository.ActivePatientRepository;
-import com.healthassist.repository.AssignedPatientRepository;
-import com.healthassist.repository.CounselorAppointmentRepository;
-import com.healthassist.repository.DoctorAppointmentRepository;
-import com.healthassist.repository.UserRepository;
 import com.healthassist.common.AuthorityName;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 @Service
 public class AdminService {
+
+	@Autowired
+	private AssessmentRepository assessmentRepository;
 
 	@Autowired
 	UserRepository userRepository;
@@ -44,10 +48,17 @@ public class AdminService {
 	AssignedPatientRepository assignedPatientRepository;
 
 	@Autowired
+	private PatientRecordRepository patientRecordRepository;
+
+	@Autowired
 	private BaseService baseService;
 
 	@Autowired
 	private PatientRecordService patientRecordService;
+
+	public void createAssessment(Assessment assessment) {
+		assessmentRepository.save(assessment);
+	}
 
 	public AdminPatientReport getAdminPatientReportByRange(LocalDateTime startDateTime, LocalDateTime endDateTime) {
 		AdminPatientReport report = new AdminPatientReport();
@@ -83,8 +94,17 @@ public class AdminService {
 		return patientCardPage.map(userMapper::toAdminPatientCard);
 	}
 
+	public Page<AdminDoctorCard> getDoctors(Pageable pageable) {
+		Page<User> patientCardPage = userRepository.findByAuthorityContainsAndDeletedFalseOrderByCreatedAtDesc(AuthorityName.ROLE_DOCTOR, pageable);
+		return patientCardPage.map(userMapper::toAdminDoctorCard);
+	}
+
 	public AdminUserCreateResponse createPatient(UserRequest userRequest) {
 		return createUser(userRequest, AuthorityName.ROLE_PATIENT);
+	}
+
+	public AdminUserCreateResponse createDoctor(UserRequest userRequest) {
+		return createUser(userRequest, AuthorityName.ROLE_DOCTOR);
 	}
 
 	private AdminUserCreateResponse createUser(UserRequest userRequest, AuthorityName authorityName) {
@@ -97,5 +117,74 @@ public class AdminService {
 		response.setUser(loginResponse.getUser());
 		return response;
 	}
+
+	public void removeDoctor(String emailAddress) {
+		removeUser(emailAddress, AuthorityName.ROLE_DOCTOR);
+	}
+
+	private void removeUser(String emailAddress, AuthorityName authorityName) {
+		User user = userRepository.findByEmailAddressAndAuthorityContainsAndDeletedFalse(emailAddress, Collections.singleton(authorityName));
+		System.out.println("hola" + user);
+/*		if (authorityName == AuthorityName.ROLE_PATIENT) {
+			activePatientRepository.deleteByPatientId(user.getUserId());
+			assessmentResultRepository.deleteByPatientId(user.getUserId());
+			assignedPatientRepository.deleteByPatientId(user.getUserId());
+			counselorAppointmentRepository.deleteByPatientId(user.getUserId());
+			doctorAppointmentRepository.deleteByPatientId(user.getUserId());
+			patientRecordRepository.deleteByPatientId(user.getUserId());
+		}
+		if (authorityName == AuthorityName.ROLE_COUNSELOR) {
+			List<CounselorAppointment> appointments = counselorAppointmentRepository.findByCounselorId(user.getUserId());
+			for (CounselorAppointment appointment : appointments) {
+				List<PatientRecord> patientRecords = patientRecordRepository.findByAppointmentIdAndStatus(appointment.getAppointmentId(), PatientRecordStatus.COUNSELOR_APPOINTMENT);
+				patientRecords.forEach(patientRecord -> {
+					if (patientRecord.getActivePatientId() != null)
+						activePatientRepository.deleteByActivePatientId(patientRecord.getActivePatientId());
+					patientRecordRepository.deleteByPatientRecordId(patientRecord.getPatientRecordId());
+				});
+				patientRecords = patientRecordRepository.findByAppointmentIdAndStatus(appointment.getAppointmentId(), PatientRecordStatus.COUNSELOR_IN_PROGRESS);
+				patientRecords.forEach(patientRecord -> {
+					if (patientRecord.getActivePatientId() != null)
+						activePatientRepository.deleteByActivePatientId(patientRecord.getActivePatientId());
+					patientRecordRepository.deleteByPatientRecordId(patientRecord.getPatientRecordId());
+				});
+				counselorAppointmentRepository.deleteByAppointmentId(appointment.getAppointmentId());
+			}
+		}*/
+		if (authorityName == AuthorityName.ROLE_DOCTOR) {
+			List<DoctorAppointment> appointments = doctorAppointmentRepository.findByDoctorId(user.getUserId());
+			for (DoctorAppointment appointment : appointments) {
+				List<PatientRecord> patientRecords = patientRecordRepository.findByAppointmentIdAndStatus(appointment.getAppointmentId(), PatientRecordStatus.DOCTOR_APPOINTMENT);
+				patientRecords.forEach(patientRecord -> {
+					if (patientRecord.getActivePatientId() != null)
+						activePatientRepository.deleteByActivePatientId(patientRecord.getActivePatientId());
+					patientRecordRepository.deleteByPatientRecordId(patientRecord.getPatientRecordId());
+				});
+				patientRecords = patientRecordRepository.findByAppointmentIdAndStatus(appointment.getAppointmentId(), PatientRecordStatus.DOCTOR_IN_PROGRESS);
+				patientRecords.forEach(patientRecord -> {
+					if (patientRecord.getActivePatientId() != null)
+						activePatientRepository.deleteByActivePatientId(patientRecord.getActivePatientId());
+					patientRecordRepository.deleteByPatientRecordId(patientRecord.getPatientRecordId());
+				});
+				doctorAppointmentRepository.deleteByAppointmentId(appointment.getAppointmentId());
+			}
+			assignedPatientRepository.deleteByDoctorRegistrationNumber(user.getRegistrationNumber());
+		}
+		if (user != null) {
+			user.setDeleted(true);
+			userRepository.save(user);
+		} else {
+			throw new ResourceNotFoundException("user not found!");
+		}
+	}
+
+	public void resetUsers() {
+		userRepository.findAll().forEach(user -> {
+			user.setDeleted(false);
+			user.setPasswordAutoGenerated(false);
+			userRepository.save(user);
+		});
+	}
+
 
 }
