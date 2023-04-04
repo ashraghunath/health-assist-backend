@@ -5,9 +5,12 @@ import com.healthassist.request.AppointmentListForDateRequest;
 import com.healthassist.request.AppointmentRequest;
 import com.healthassist.request.LoginRequest;
 import com.healthassist.request.UserRequest;
+import com.healthassist.request.UserUpdateRequest;
 import com.healthassist.response.*;
 import com.healthassist.service.BaseService;
 import com.healthassist.service.DoctorService;
+import com.healthassist.service.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +30,9 @@ public class DoctorController {
 
 	@Autowired
 	private BaseService baseService;
+	
+    @Autowired
+    private UserService userService;
 
 	@PostMapping("/login")
 	public LoginResponse login(@Valid @RequestBody LoginRequest request) {
@@ -82,4 +88,14 @@ public class DoctorController {
 	public void editAppointment(@Valid @RequestBody AppointmentRequest appointmentRequest) {
 		doctorService.editAppointment(appointmentRequest);
 	}
+	
+    @RequestMapping(value = "/profile", method = RequestMethod.GET)
+    public UserProfileResponse getProfileCard() {
+        return userService.getProfileCard();
+    }
+
+    @RequestMapping(value = "/profile", method = RequestMethod.PATCH)
+    public UserProfileResponse updateProfile(@RequestBody UserUpdateRequest userUpdateRequest) {
+        return userService.updateProfile(userUpdateRequest);
+    }
 }
